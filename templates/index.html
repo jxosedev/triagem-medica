@@ -910,18 +910,27 @@
     }
   };
 
+  let _lastSintomas = '';
   function analisarSintomas() {
     const t = document.getElementById('sintomas_desc').value.toLowerCase();
+    if (t === _lastSintomas) return;
+    _lastSintomas = t;
     const container = document.getElementById('sintomas-detalhes');
-    container.innerHTML = '';
 
     for (const [keys, config] of Object.entries(sintomasConfig)) {
       const keywords = keys.split('|');
-      if (keywords.some(k => t.includes(k))) {
-        const div = document.createElement('div');
-        div.className = 'sub-section show';
-        div.innerHTML = `<h4><span class="ico">${config.icon}</span> ${config.label}</h4>${config.campos}`;
-        container.appendChild(div);
+      const shouldShow = keywords.some(k => t.includes(k));
+      const existingId = 'ss-' + keys.replace(/[^a-z]/g, '_');
+      let el = document.getElementById(existingId);
+
+      if (shouldShow && !el) {
+        el = document.createElement('div');
+        el.id = existingId;
+        el.className = 'sub-section show';
+        el.innerHTML = `<h4><span class="ico">${config.icon}</span> ${config.label}</h4>${config.campos}`;
+        container.appendChild(el);
+      } else if (!shouldShow && el) {
+        el.remove();
       }
     }
   }
@@ -1170,6 +1179,7 @@
     document.getElementById('triage-form').style.display = 'block';
     document.getElementById('triage-form').reset();
     document.getElementById('sintomas-detalhes').innerHTML = '';
+    _lastSintomas = '';
     document.querySelectorAll('.checkbox-item').forEach(el => {
       el.classList.remove('checked');
       el.querySelector('input[type="checkbox"]').checked = false;
