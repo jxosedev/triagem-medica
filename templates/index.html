@@ -4,532 +4,424 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SIS-TRIAGEM — Sistema de Classificação de Risco</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%230c2337'/%3E%3Cpath d='M2 12h4l1.6-4.5L11 17l2.4-8.5L15 12h7' fill='none' stroke='%2322d3c5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   :root {
-    --primary: #005b96;
-    --primary-dark: #003f6b;
-    --primary-light: #e8f4fd;
-    --accent: #00a1b0;
-    --success: #2e7d32;
-    --success-bg: #e8f5e9;
-    --warning: #f57f17;
-    --warning-bg: #fff8e1;
-    --orange: #e65100;
-    --orange-bg: #fff3e0;
-    --danger: #c62828;
-    --danger-bg: #ffebee;
-    --gray-50: #fafafa;
-    --gray-100: #f5f5f5;
-    --gray-200: #eeeeee;
-    --gray-300: #e0e0e0;
-    --gray-400: #bdbdbd;
-    --gray-500: #9e9e9e;
-    --gray-600: #757575;
-    --gray-700: #616161;
-    --gray-800: #424242;
-    --gray-900: #212121;
-    --radius: 12px;
-    --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
-    --shadow-lg: 0 10px 25px rgba(0,0,0,.1), 0 4px 10px rgba(0,0,0,.06);
+    --bg: #eef2f6;
+    --surface: #ffffff;
+    --surface-2: #f6f9fb;
+    --ink: #0e2436;
+    --ink-soft: #4c6478;
+    --ink-faint: #93a5b4;
+    --line: #dde5ec;
+
+    --navy-950: #071726;
+    --navy-900: #0c2337;
+    --navy-800: #123449;
+    --teal: #067a8f;
+    --teal-strong: #045b6b;
+    --teal-glow: #22d3c5;
+    --teal-bg: #e3f6f4;
+
+    --verde: #158a45; --verde-bg: #e8f8ee; --verde-line: #bfe6cd;
+    --amarelo: #b9860a; --amarelo-bg: #fdf6e0; --amarelo-line: #eddb9e;
+    --laranja: #c85a12; --laranja-bg: #fdeee2; --laranja-line: #f3cda6;
+    --vermelho: #c22626; --vermelho-bg: #fbe9e9; --vermelho-line: #f0bcbc;
+
+    --radius: 16px;
+    --radius-sm: 10px;
+    --shadow-sm: 0 1px 2px rgba(10,30,48,.06), 0 1px 1px rgba(10,30,48,.04);
+    --shadow-md: 0 10px 26px rgba(10,30,48,.09), 0 2px 8px rgba(10,30,48,.05);
+    --shadow-lg: 0 24px 60px rgba(6,18,30,.2);
+
+    --f-display: 'Space Grotesk', 'Inter', sans-serif;
+    --f-body: 'Inter', -apple-system, sans-serif;
+    --f-mono: 'JetBrains Mono', ui-monospace, monospace;
   }
 
+  html { -webkit-font-smoothing: antialiased; }
   body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: var(--gray-100);
-    color: var(--gray-900);
+    font-family: var(--f-body);
+    background: var(--bg);
+    background-image: radial-gradient(circle at 100% 0%, rgba(6,122,143,.06), transparent 45%);
+    color: var(--ink);
     min-height: 100vh;
   }
+  :focus-visible { outline: 2.5px solid var(--teal-glow); outline-offset: 2px; }
 
-  /* HEADER SISTEMA */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+  }
+
+  /* ============ HEADER ============ */
   .sys-header {
-    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, var(--accent) 100%);
+    background: linear-gradient(120deg, var(--navy-950) 0%, var(--navy-900) 55%, var(--navy-800) 100%);
     color: #fff;
-    padding: 0;
     position: sticky;
     top: 0;
     z-index: 100;
-    box-shadow: 0 2px 8px rgba(0,0,0,.15);
+    box-shadow: 0 4px 18px rgba(3,12,20,.28);
+    border-bottom: 1px solid rgba(34,211,197,.18);
   }
   .sys-header-inner {
-    max-width: 1000px;
+    max-width: 1240px;
     margin: 0 auto;
-    padding: 14px 24px;
+    padding: 12px 24px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 20px;
   }
-  .sys-brand {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
+  .sys-brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
   .sys-brand-icon {
-    width: 42px;
-    height: 42px;
-    background: rgba(255,255,255,.2);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
+    width: 40px; height: 40px; flex-shrink: 0;
+    background: linear-gradient(145deg, var(--teal), var(--teal-strong));
+    border-radius: 11px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 0 1px rgba(255,255,255,.12) inset, 0 4px 10px rgba(0,0,0,.25);
   }
+  .sys-brand-icon svg { width: 22px; height: 22px; }
   .sys-brand-text h1 {
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: .3px;
+    font-family: var(--f-display);
+    font-size: 17px; font-weight: 700; letter-spacing: .3px; line-height: 1.2;
   }
-  .sys-brand-text span {
-    font-size: 11px;
-    opacity: .8;
-    display: block;
-    font-weight: 400;
-    letter-spacing: .5px;
+  .sys-brand-text .sub {
+    font-family: var(--f-mono);
+    font-size: 10px; opacity: .65; display: block; font-weight: 400;
+    letter-spacing: .6px; margin-top: 2px; text-transform: uppercase;
   }
+
+  .ecg-wrap {
+    flex: 1; max-width: 320px; height: 34px; overflow: hidden;
+    position: relative; opacity: .85;
+    mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  }
+  .ecg-wrap svg { position: absolute; left: 0; top: 0; height: 34px; width: 640px; animation: ecgScroll 3.2s linear infinite; }
+  @keyframes ecgScroll { from { transform: translateX(0); } to { transform: translateX(-320px); } }
+
+  .sys-meta { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+  .sys-clock {
+    font-family: var(--f-mono); font-size: 13px; color: var(--teal-glow);
+    letter-spacing: .5px; text-align: right; line-height: 1.25;
+  }
+  .sys-clock .lbl { display: block; font-size: 9px; color: rgba(255,255,255,.5); text-transform: uppercase; letter-spacing: .8px; }
   .sys-badge {
-    background: rgba(255,255,255,.15);
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: .5px;
-    border: 1px solid rgba(255,255,255,.2);
+    background: rgba(255,255,255,.08);
+    padding: 6px 13px; border-radius: 20px; font-size: 10.5px; font-weight: 600;
+    letter-spacing: .4px; border: 1px solid rgba(34,211,197,.35); color: var(--teal-glow);
+    white-space: nowrap;
   }
+  @media (max-width: 900px) { .ecg-wrap { display: none; } }
+  @media (max-width: 600px) { .sys-badge { display: none; } .sys-clock { display: none; } }
 
-  .container {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 24px;
+  /* ============ SHELL / LAYOUT ============ */
+  .app-shell {
+    max-width: 1240px; margin: 0 auto; padding: 28px 24px 60px;
+    display: grid; grid-template-columns: 1fr 296px; gap: 24px; align-items: start;
   }
+  @media (max-width: 1080px) { .app-shell { grid-template-columns: 1fr; } .patient-rail { display: none; } }
+  @media (max-width: 700px) { .app-shell { padding: 16px 14px 40px; } }
 
-  /* BANNER DE ATENÇÃO */
+  /* NOTICE */
   .notice-bar {
-    background: #fff;
-    border-left: 4px solid var(--primary);
-    padding: 12px 18px;
-    border-radius: 8px;
-    margin-bottom: 24px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 13px;
-    color: var(--gray-700);
-    box-shadow: var(--shadow);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--teal);
+    padding: 13px 18px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    display: flex; align-items: flex-start; gap: 12px;
+    font-size: 13px; color: var(--ink-soft); line-height: 1.5;
+    box-shadow: var(--shadow-sm);
   }
-  .notice-bar strong { color: var(--primary); }
+  .notice-bar strong { color: var(--navy-900); }
+  .notice-bar .ni { flex-shrink: 0; width: 20px; height: 20px; color: var(--teal); margin-top: 1px; }
 
-  /* TIMELINE */
+  /* ============ TIMELINE ============ */
   .timeline {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 28px;
-    padding: 0 4px;
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 26px; padding: 0 2px;
   }
-  .tl-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    flex: 1;
-    position: relative;
-  }
+  .tl-item { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; position: relative; }
   .tl-dot {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: var(--gray-300);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 13px;
-    font-weight: 700;
-    color: #fff;
-    transition: all .3s;
-    z-index: 2;
+    width: 38px; height: 38px; border-radius: 50%;
+    background: var(--surface); border: 2px solid var(--line);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ink-faint);
+    transition: all .3s; z-index: 2;
   }
-  .tl-dot.active { background: var(--primary); transform: scale(1.1); box-shadow: 0 0 0 4px var(--primary-light); }
-  .tl-dot.done { background: var(--success); }
+  .tl-dot svg { width: 17px; height: 17px; }
+  .tl-dot.active { border-color: var(--teal); color: var(--teal); background: var(--teal-bg); transform: scale(1.08); box-shadow: 0 0 0 5px rgba(6,122,143,.12); }
+  .tl-dot.done { border-color: var(--teal-strong); background: var(--teal-strong); color: #fff; }
   .tl-label {
-    font-size: 10px;
-    color: var(--gray-500);
-    text-align: center;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: .4px;
+    font-size: 10px; color: var(--ink-faint); text-align: center; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .5px; font-family: var(--f-mono);
   }
-  .tl-label.active { color: var(--primary); font-weight: 600; }
-  .tl-label.done { color: var(--success); }
+  .tl-label.active { color: var(--teal-strong); }
+  .tl-label.done { color: var(--ink-soft); }
   .tl-line {
-    position: absolute;
-    top: 16px;
-    left: calc(50% + 20px);
-    right: calc(-50% + 20px);
-    height: 2px;
-    background: var(--gray-300);
-    z-index: 0;
+    position: absolute; top: 19px; left: calc(50% + 24px); right: calc(-50% + 24px);
+    height: 2px; background: var(--line); z-index: 0;
   }
-  .tl-line.active { background: var(--primary); }
-  .tl-line.done { background: var(--success); }
+  .tl-line.active { background: linear-gradient(90deg, var(--teal-strong), var(--line)); }
+  .tl-line.done { background: var(--teal-strong); }
   .tl-item:last-child .tl-line { display: none; }
+  @media (max-width: 700px) { .tl-label { display: none; } }
 
-  /* CARDS DE ETAPA */
+  /* ============ STEP CARDS ============ */
   .step-card {
-    background: #fff;
+    background: var(--surface);
+    border: 1px solid var(--line);
     border-radius: var(--radius);
-    box-shadow: var(--shadow);
+    box-shadow: var(--shadow-md);
     margin-bottom: 20px;
     overflow: hidden;
-    transition: all .3s;
     display: none;
+    position: relative;
+  }
+  .step-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--teal-strong), var(--teal-glow));
   }
   .step-card.active { display: block; animation: fadeIn .35s ease; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
   .step-header {
-    background: var(--primary-light);
-    padding: 16px 24px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    border-bottom: 1px solid rgba(0,91,150,.1);
+    padding: 18px 24px; display: flex; align-items: center; gap: 13px;
+    border-bottom: 1px solid var(--line); background: var(--surface-2);
   }
   .step-number {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: var(--primary);
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    font-weight: 700;
+    width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0;
+    background: linear-gradient(145deg, var(--navy-900), var(--teal-strong));
+    color: #fff; display: flex; align-items: center; justify-content: center;
   }
-  .step-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--primary-dark);
-  }
-  .step-subtitle {
-    font-size: 12px;
-    color: var(--gray-600);
-    margin-left: auto;
-  }
+  .step-number svg { width: 18px; height: 18px; }
+  .step-title { font-family: var(--f-display); font-size: 16px; font-weight: 700; color: var(--navy-900); }
+  .step-subtitle { font-size: 11.5px; color: var(--ink-faint); margin-left: auto; text-align: right; font-family: var(--f-mono); }
   .step-body { padding: 24px; }
 
-  /* FORMULÁRIO */
-  .form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
+  /* ============ FORM ============ */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   .form-grid .full { grid-column: 1 / -1; }
-  .form-group { display: flex; flex-direction: column; gap: 4px; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
   .form-group label {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--gray-700);
-    text-transform: uppercase;
-    letter-spacing: .4px;
+    font-size: 11px; font-weight: 700; color: var(--ink-soft);
+    text-transform: uppercase; letter-spacing: .5px;
   }
-  .form-group label .opt { font-weight: 400; text-transform: none; color: var(--gray-500); letter-spacing: 0; }
-  .form-group input,
-  .form-group select,
-  .form-group textarea {
-    padding: 10px 14px;
-    border: 1.5px solid var(--gray-300);
-    border-radius: 8px;
-    font-size: 14px;
-    font-family: 'Inter', sans-serif;
-    transition: all .2s;
-    background: #fff;
+  .form-group label .opt { font-weight: 500; text-transform: none; color: var(--ink-faint); letter-spacing: 0; }
+  .form-group input, .form-group select, .form-group textarea {
+    padding: 11px 14px; border: 1.5px solid var(--line); border-radius: var(--radius-sm);
+    font-size: 14px; font-family: var(--f-body); transition: all .18s; background: var(--surface);
+    color: var(--ink);
   }
-  .form-group input:focus,
-  .form-group select:focus,
-  .form-group textarea:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(0,91,150,.12);
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    outline: none; border-color: var(--teal); box-shadow: 0 0 0 3.5px rgba(6,122,143,.14);
   }
-  .form-group textarea { resize: vertical; min-height: 80px; }
-  .form-group input.error { border-color: var(--danger); box-shadow: 0 0 0 3px rgba(198,40,40,.12); }
+  .form-group textarea { resize: vertical; min-height: 84px; font-family: var(--f-body); }
+  .form-group input.error { border-color: var(--vermelho); box-shadow: 0 0 0 3.5px rgba(194,38,38,.14); }
 
-  .checkbox-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 6px;
-  }
+  .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); gap: 8px; }
   .checkbox-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all .15s;
-    font-size: 13px;
-    font-weight: 500;
-    border: 1.5px solid var(--gray-200);
-    user-select: none;
+    display: flex; align-items: center; gap: 9px; padding: 10px 13px; border-radius: var(--radius-sm);
+    cursor: pointer; transition: all .15s; font-size: 13px; font-weight: 500;
+    border: 1.5px solid var(--line); user-select: none; background: var(--surface);
   }
-  .checkbox-item:hover { border-color: var(--primary); background: var(--primary-light); }
-  .checkbox-item.checked { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+  .checkbox-item:hover { border-color: var(--teal); background: var(--teal-bg); }
+  .checkbox-item.checked { border-color: var(--teal-strong); background: var(--teal-bg); color: var(--teal-strong); }
   .checkbox-item input[type="checkbox"] { display: none; }
   .checkbox-item .ckbox {
-    width: 18px;
-    height: 18px;
-    border: 2px solid var(--gray-400);
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    color: #fff;
-    transition: all .15s;
-    flex-shrink: 0;
+    width: 18px; height: 18px; border: 2px solid var(--ink-faint); border-radius: 5px;
+    display: flex; align-items: center; justify-content: center; font-size: 11px; color: #fff;
+    transition: all .15s; flex-shrink: 0;
   }
-  .checkbox-item.checked .ckbox { background: var(--primary); border-color: var(--primary); }
+  .checkbox-item.checked .ckbox { background: var(--teal-strong); border-color: var(--teal-strong); }
 
-  /* SUB-SEÇÃO SINTOMAS */
   .sub-section {
-    background: var(--gray-50);
-    border: 1px solid var(--gray-200);
-    border-radius: 10px;
-    padding: 18px;
-    margin-top: 14px;
-    display: none;
-    animation: fadeIn .25s ease;
+    background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-sm);
+    padding: 18px; margin-top: 14px; display: none; animation: fadeIn .25s ease;
   }
   .sub-section.show { display: block; }
   .sub-section h4 {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--primary);
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    font-size: 12.5px; font-weight: 700; color: var(--teal-strong); margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: .4px;
+    font-family: var(--f-mono);
   }
-  .sub-section h4 .ico { font-size: 16px; }
+  .sub-section h4 .ico { font-size: 15px; }
   .sub-section .form-grid { gap: 12px; }
 
   .alert-box {
-    background: var(--danger-bg);
-    border: 1px solid rgba(198,40,40,.2);
-    border-radius: 8px;
-    padding: 10px 14px;
-    font-size: 12px;
-    color: var(--danger);
-    margin-top: 10px;
-    display: none;
-    font-weight: 500;
+    background: var(--vermelho-bg); border: 1px solid var(--vermelho-line); border-radius: var(--radius-sm);
+    padding: 11px 15px; font-size: 12.5px; color: var(--vermelho); margin-top: 10px;
+    display: none; font-weight: 600;
   }
   .alert-box.show { display: block; }
 
-  /* BOTÕES */
-  .btn-row {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    margin-top: 8px;
+  /* ============ MONITOR TILES (signature element) ============ */
+  .monitor-panel {
+    background: linear-gradient(160deg, var(--navy-950), var(--navy-900));
+    border-radius: var(--radius); padding: 18px; margin-bottom: 20px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+    box-shadow: inset 0 0 0 1px rgba(34,211,197,.14);
   }
+  .monitor-tile { text-align: center; padding: 8px 4px; border-radius: 10px; }
+  .monitor-tile .m-label {
+    font-family: var(--f-mono); font-size: 9.5px; color: rgba(255,255,255,.45);
+    text-transform: uppercase; letter-spacing: .8px; display: block; margin-bottom: 4px;
+  }
+  .monitor-tile .m-value {
+    font-family: var(--f-mono); font-size: 24px; font-weight: 700; color: var(--teal-glow);
+    text-shadow: 0 0 14px rgba(34,211,197,.45); line-height: 1;
+  }
+  .monitor-tile .m-unit { font-size: 11px; font-weight: 500; opacity: .7; margin-left: 2px; }
+  .monitor-tile.warn .m-value { color: #ffcf6b; text-shadow: 0 0 14px rgba(255,207,107,.45); }
+  .monitor-tile.crit .m-value { color: #ff8686; text-shadow: 0 0 14px rgba(255,134,134,.5); animation: tileBlip 1s infinite; }
+  @keyframes tileBlip { 0%,100% { opacity: 1; } 50% { opacity: .55; } }
+  @media (max-width: 600px) { .monitor-panel { grid-template-columns: repeat(2, 1fr); } }
+
+  /* ============ BUTTONS ============ */
+  .btn-row { display: flex; justify-content: space-between; gap: 12px; margin-top: 22px; }
   .btn {
-    padding: 12px 28px;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    font-family: 'Inter', sans-serif;
-    cursor: pointer;
-    transition: all .2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
+    padding: 12px 26px; border: none; border-radius: 10px; font-size: 14px; font-weight: 700;
+    font-family: var(--f-body); cursor: pointer; transition: all .18s;
+    display: inline-flex; align-items: center; gap: 8px; letter-spacing: .1px;
   }
   .btn:active { transform: scale(.97); }
-  .btn-primary { background: var(--primary); color: #fff; }
-  .btn-primary:hover { background: var(--primary-dark); box-shadow: 0 4px 12px rgba(0,91,150,.3); }
-  .btn-outline { background: transparent; color: var(--primary); border: 1.5px solid var(--primary); }
-  .btn-outline:hover { background: var(--primary-light); }
-  .btn-success { background: var(--success); color: #fff; }
-  .btn-success:hover { background: #1b5e20; box-shadow: 0 4px 12px rgba(46,125,50,.3); }
+  .btn-primary { background: var(--navy-900); color: #fff; }
+  .btn-primary:hover { background: var(--teal-strong); box-shadow: 0 6px 16px rgba(6,122,143,.3); }
+  .btn-outline { background: transparent; color: var(--teal-strong); border: 1.5px solid var(--teal-strong); }
+  .btn-outline:hover { background: var(--teal-bg); }
+  .btn-success { background: var(--verde); color: #fff; }
+  .btn-success:hover { background: #0f6d36; box-shadow: 0 6px 16px rgba(21,138,69,.3); }
   .btn-success:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; }
-  .btn-ghost { background: transparent; color: var(--gray-600); border: 1px solid var(--gray-300); }
-  .btn-ghost:hover { background: var(--gray-100); }
+  .btn-ghost { background: transparent; color: var(--ink-soft); border: 1px solid var(--line); }
+  .btn-ghost:hover { background: var(--surface-2); }
 
-  /* RESULTADO */
+  /* ============ RESULTADO ============ */
   #resultado { display: none; }
   #resultado.show { display: block; animation: fadeIn .4s ease; }
 
   .result-header {
-    text-align: center;
-    padding: 24px;
-    border-radius: var(--radius) var(--radius) 0 0;
-    color: #fff;
-    position: relative;
-    overflow: hidden;
+    text-align: center; padding: 28px 24px; border-radius: var(--radius) var(--radius) 0 0;
+    color: #fff; position: relative; overflow: hidden;
   }
   .result-header::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle at 30% 50%, rgba(255,255,255,.1) 0%, transparent 60%);
+    content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+    background: radial-gradient(circle at 30% 50%, rgba(255,255,255,.12) 0%, transparent 60%);
   }
-  .result-header h2 { font-size: 22px; position: relative; }
+  .result-header h2 { font-family: var(--f-display); font-size: 15px; font-weight: 600; position: relative; text-transform: uppercase; letter-spacing: 1px; opacity: .85; }
   .result-header .result-tag {
-    display: inline-block;
-    padding: 6px 20px;
-    border-radius: 20px;
-    font-size: 28px;
-    font-weight: 800;
-    letter-spacing: 2px;
-    margin-top: 8px;
-    position: relative;
+    display: inline-block; padding: 6px 24px; border-radius: 24px; font-size: 30px; font-weight: 800;
+    letter-spacing: 3px; margin-top: 10px; position: relative; font-family: var(--f-display);
   }
-  .result-header .result-sub {
-    font-size: 13px;
-    opacity: .85;
-    margin-top: 6px;
-    position: relative;
-  }
+  .result-header .result-sub { font-size: 13px; opacity: .9; margin-top: 8px; position: relative; font-family: var(--f-mono); letter-spacing: .3px; }
 
-  .bg-verde { background: linear-gradient(135deg, #1b5e20, #2e7d32); }
-  .bg-verde .result-tag { background: rgba(255,255,255,.2); }
-  .bg-amarelo { background: linear-gradient(135deg, #e65100, #f57f17); }
-  .bg-amarelo .result-tag { background: rgba(255,255,255,.2); }
-  .bg-laranja { background: linear-gradient(135deg, #bf360c, #e65100); }
-  .bg-laranja .result-tag { background: rgba(255,255,255,.2); }
-  .bg-vermelho { background: linear-gradient(135deg, #b71c1c, #c62828); }
-  .bg-vermelho .result-tag { background: rgba(255,255,255,.2); }
+  .bg-verde { background: linear-gradient(135deg, #0d5c2e, var(--verde)); }
+  .bg-verde .result-tag { background: rgba(255,255,255,.18); }
+  .bg-amarelo { background: linear-gradient(135deg, #8a6205, var(--amarelo)); }
+  .bg-amarelo .result-tag { background: rgba(255,255,255,.18); }
+  .bg-laranja { background: linear-gradient(135deg, #8a3d0c, var(--laranja)); }
+  .bg-laranja .result-tag { background: rgba(255,255,255,.18); }
+  .bg-vermelho { background: linear-gradient(135deg, #7a1414, var(--vermelho)); }
+  .bg-vermelho .result-tag { background: rgba(255,255,255,.18); animation: tileBlip 1.4s infinite; }
 
-  .result-body {
-    background: #fff;
-    border-radius: 0 0 var(--radius) var(--radius);
-    box-shadow: var(--shadow-lg);
-    overflow: hidden;
-  }
-  .result-section {
-    padding: 20px 24px;
-    border-bottom: 1px solid var(--gray-200);
-  }
+  .result-body { background: var(--surface); border-radius: 0 0 var(--radius) var(--radius); box-shadow: var(--shadow-lg); overflow: hidden; }
+  .result-section { padding: 20px 24px; border-bottom: 1px solid var(--line); }
   .result-section:last-child { border-bottom: none; }
   .result-section h3 {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--gray-500);
-    text-transform: uppercase;
-    letter-spacing: .8px;
-    margin-bottom: 6px;
+    font-size: 10.5px; font-weight: 700; color: var(--ink-faint); text-transform: uppercase;
+    letter-spacing: .9px; margin-bottom: 8px; font-family: var(--f-mono);
   }
-  .result-section p { font-size: 14px; line-height: 1.7; color: var(--gray-800); }
+  .result-section p { font-size: 14px; line-height: 1.7; color: var(--ink); }
   .result-section ul { list-style: none; padding: 0; }
-  .result-section ul li {
-    padding: 6px 0 6px 20px;
-    font-size: 14px;
-    color: var(--gray-800);
-    position: relative;
-    line-height: 1.5;
-  }
-  .result-section ul li::before {
-    content: '›';
-    position: absolute;
-    left: 4px;
-    font-weight: 700;
-    color: var(--primary);
-  }
+  .result-section ul li { padding: 6px 0 6px 20px; font-size: 14px; color: var(--ink); position: relative; line-height: 1.5; }
+  .result-section ul li::before { content: '›'; position: absolute; left: 4px; font-weight: 700; color: var(--teal-strong); }
   .result-orientacao {
-    background: var(--primary-light);
-    border-radius: 8px;
-    padding: 14px 18px;
-    font-weight: 600;
-    font-size: 14px;
-    color: var(--primary-dark);
-    border-left: 4px solid var(--primary);
+    background: var(--teal-bg); border-radius: var(--radius-sm); padding: 15px 18px; font-weight: 700;
+    font-size: 14px; color: var(--teal-strong); border-left: 4px solid var(--teal-strong);
   }
+  .result-patient-info { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12.5px; color: var(--ink-soft); font-family: var(--f-mono); }
+  .result-patient-info span { background: var(--surface-2); padding: 3px 11px; border-radius: 6px; border: 1px solid var(--line); }
+  .result-actions { padding: 18px 24px; display: flex; gap: 10px; justify-content: center; border-top: 1px solid var(--line); }
 
-  .result-patient-info {
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-    font-size: 13px;
-    color: var(--gray-600);
-  }
-  .result-patient-info span { background: var(--gray-100); padding: 2px 10px; border-radius: 4px; }
-
-  .result-actions {
-    padding: 16px 24px;
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    border-top: 1px solid var(--gray-200);
-  }
-
-  /* EMERGÊNCIA */
+  /* ============ EMERGÊNCIA ============ */
   .emergency-overlay {
-    background: var(--danger);
-    color: #fff;
-    text-align: center;
-    padding: 16px 24px;
-    border-radius: var(--radius);
-    margin-bottom: 20px;
-    font-weight: 700;
-    font-size: 16px;
-    animation: pulse 2s infinite;
-    display: none;
+    background: linear-gradient(120deg, #7a1414, var(--vermelho));
+    color: #fff; text-align: center; padding: 16px 24px; border-radius: var(--radius);
+    margin-bottom: 20px; font-weight: 700; font-size: 15px; display: none;
+    box-shadow: var(--shadow-lg); border: 1px solid rgba(255,255,255,.2);
+    letter-spacing: .3px;
   }
-  .emergency-overlay.show { display: block; }
-  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .85; } }
+  .emergency-overlay.show { display: flex; align-items: center; justify-content: center; gap: 10px; animation: pulse 1.6s infinite; }
+  .emergency-overlay svg { width: 20px; height: 20px; flex-shrink: 0; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .82; } }
 
-  /* LOADING */
+  /* ============ LOADING ============ */
   #loading {
-    display: none;
-    text-align: center;
-    padding: 60px 24px;
-    background: #fff;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
+    display: none; text-align: center; padding: 64px 24px; background: var(--surface);
+    border-radius: var(--radius); box-shadow: var(--shadow-md); border: 1px solid var(--line);
   }
   #loading.show { display: block; }
-  .spinner-ring {
-    width: 52px;
-    height: 52px;
-    border: 4px solid var(--gray-200);
-    border-top-color: var(--primary);
-    border-radius: 50%;
-    animation: spin .7s linear infinite;
-    margin: 0 auto 16px;
+  .pulse-loader { width: 180px; height: 46px; margin: 0 auto 18px; }
+  .pulse-loader svg { width: 100%; height: 100%; }
+  .pulse-loader path {
+    fill: none; stroke: var(--teal-strong); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round;
+    stroke-dasharray: 180; stroke-dashoffset: 0; animation: pulseDraw 1.4s ease-in-out infinite;
   }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes pulseDraw { 0% { stroke-dashoffset: 180; } 60% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: -180; } }
+  #loading p.lead { color: var(--navy-900); font-size: 15px; font-weight: 600; }
+  #loading p.sub { color: var(--ink-faint); font-size: 12.5px; margin-top: 5px; font-family: var(--f-mono); }
 
-  /* RESPONSIVO */
+  /* ============ PATIENT RAIL (aside) ============ */
+  .patient-rail { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 88px; }
+  .rail-card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+    box-shadow: var(--shadow-sm); overflow: hidden;
+  }
+  .rail-card h5 {
+    font-family: var(--f-mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: .8px;
+    color: var(--ink-faint); padding: 14px 18px 0;
+  }
+  .rail-name { padding: 6px 18px 14px; }
+  .rail-name .n { font-family: var(--f-display); font-size: 16px; font-weight: 700; color: var(--navy-900); display: block; }
+  .rail-name .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .rail-name .chips span {
+    background: var(--surface-2); border: 1px solid var(--line); font-size: 11px; padding: 3px 9px;
+    border-radius: 6px; color: var(--ink-soft); font-family: var(--f-mono);
+  }
+  .rail-steps { padding: 6px 8px 14px; display: flex; flex-direction: column; gap: 2px; }
+  .rail-step { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; font-size: 12.5px; color: var(--ink-faint); font-weight: 600; }
+  .rail-step .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--line); flex-shrink: 0; }
+  .rail-step.active { color: var(--teal-strong); background: var(--teal-bg); }
+  .rail-step.active .dot { background: var(--teal-strong); box-shadow: 0 0 0 3px rgba(6,122,143,.15); }
+  .rail-step.done { color: var(--ink-soft); }
+  .rail-step.done .dot { background: var(--teal-strong); }
+  .rail-emergency {
+    background: var(--navy-950); color: #fff; padding: 16px 18px; border-radius: var(--radius);
+    font-size: 12px; line-height: 1.6;
+  }
+  .rail-emergency b { color: var(--teal-glow); display: block; font-family: var(--f-mono); font-size: 11px; letter-spacing: .5px; margin-bottom: 4px; text-transform: uppercase; }
+
+  /* ============ RESPONSIVO ============ */
   @media (max-width: 700px) {
-    .container { padding: 14px; }
     .form-grid { grid-template-columns: 1fr; }
     .checkbox-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
-    .sys-header-inner { padding: 10px 14px; }
-    .sys-brand-text h1 { font-size: 15px; }
-    .sys-badge { display: none; }
-    .tl-label { display: none; }
-    .step-body { padding: 16px; }
-    .step-header { padding: 12px 16px; }
+    .step-body { padding: 18px; }
+    .step-header { padding: 14px 16px; }
     .btn-row { flex-direction: column; }
     .btn-row .btn { justify-content: center; }
   }
 
-  /* PRINT */
+  /* ============ PRINT ============ */
   @media print {
-    .sys-header { display: none; }
-    .notice-bar { display: none; }
-    .btn-row { display: none; }
-    .result-actions { display: none; }
+    .sys-header, .notice-bar, .btn-row, .result-actions, .patient-rail { display: none !important; }
     #loading { display: none !important; }
     .step-card { box-shadow: none; border: 1px solid #ddd; }
+    .app-shell { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -539,243 +431,303 @@
 <header class="sys-header">
   <div class="sys-header-inner">
     <div class="sys-brand">
-      <div class="sys-brand-icon">🏥</div>
+      <div class="sys-brand-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h4l1.6-4.5L11 17l2.4-8.5L15 12h7"/></svg>
+      </div>
       <div class="sys-brand-text">
         <h1>SIS-TRIAGEM</h1>
-        <span>Sistema de Classificação de Risco · v1.0</span>
+        <span class="sub">Classificação de risco · apoio à decisão clínica</span>
       </div>
     </div>
-    <div class="sys-badge">⚠ Uso exclusivo para triagem inicial</div>
+
+    <div class="ecg-wrap" aria-hidden="true">
+      <svg viewBox="0 0 640 40" preserveAspectRatio="none">
+        <path d="M0,20 L60,20 L72,20 L80,6 L90,34 L100,12 L108,20 L160,20 L172,20 L180,6 L190,34 L200,12 L208,20 L260,20 L272,20 L280,6 L290,34 L300,12 L308,20 L360,20 L372,20 L380,6 L390,34 L400,12 L408,20 L460,20 L472,20 L480,6 L490,34 L500,12 L508,20 L560,20 L572,20 L580,6 L590,34 L600,12 L608,20 L640,20"
+          fill="none" stroke="#22d3c5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <div class="sys-meta">
+      <div class="sys-clock"><span class="lbl">horário</span><span id="live-clock">--:--:--</span></div>
+      <div class="sys-badge">Uso clínico exclusivo</div>
+    </div>
   </div>
 </header>
 
-<div class="container">
+<div class="app-shell">
+  <main>
 
-  <!-- AVISO -->
-  <div class="notice-bar">
-    <span style="font-size:18px;">ℹ️</span>
-    <div>Este sistema é um <strong>apoio à decisão</strong> para triagem clínica. Não substitui avaliação médica profissional. <strong>Em caso de emergência, ligue SAMU 192.</strong></div>
-  </div>
+    <!-- AVISO -->
+    <div class="notice-bar">
+      <svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16h.01"/></svg>
+      <div>Este sistema é um <strong>apoio à decisão</strong> para triagem clínica. Não substitui avaliação médica profissional. <strong>Em caso de emergência, ligue SAMU 192.</strong></div>
+    </div>
 
-  <!-- TIMELINE -->
-  <div class="timeline" id="timeline">
-    <div class="tl-item" data-step="1">
-      <div class="tl-dot active" id="tl-dot-1">1</div>
-      <div class="tl-label active" id="tl-label-1">Identificação</div>
-      <div class="tl-line" id="tl-line-1"></div>
-    </div>
-    <div class="tl-item" data-step="2">
-      <div class="tl-dot" id="tl-dot-2">2</div>
-      <div class="tl-label" id="tl-label-2">Histórico</div>
-      <div class="tl-line" id="tl-line-2"></div>
-    </div>
-    <div class="tl-item" data-step="3">
-      <div class="tl-dot" id="tl-dot-3">3</div>
-      <div class="tl-label" id="tl-label-3">Sintomas</div>
-      <div class="tl-line" id="tl-line-3"></div>
-    </div>
-    <div class="tl-item" data-step="4">
-      <div class="tl-dot" id="tl-dot-4">4</div>
-      <div class="tl-label" id="tl-label-4">Sinais Vitais</div>
-      <div class="tl-line" id="tl-line-4"></div>
-    </div>
-    <div class="tl-item" data-step="5">
-      <div class="tl-dot" id="tl-dot-5">5</div>
-      <div class="tl-label" id="tl-label-5">Resultado</div>
-    </div>
-  </div>
-
-  <!-- EMERGÊNCIA -->
-  <div class="emergency-overlay" id="emergency-overlay">
-    🚨 EMERGÊNCIA DETECTADA — LIGUE SAMU 192 IMEDIATAMENTE
-  </div>
-
-  <!-- FORMULÁRIO -->
-  <form id="triage-form" onsubmit="return false;">
-
-    <!-- STEP 1: IDENTIFICAÇÃO -->
-    <div class="step-card active" data-step="1">
-      <div class="step-header">
-        <div class="step-number">1</div>
-        <div class="step-title">Identificação do Paciente</div>
-        <div class="step-subtitle">Campos com * são obrigatórios</div>
+    <!-- TIMELINE -->
+    <div class="timeline" id="timeline">
+      <div class="tl-item" data-step="1">
+        <div class="tl-dot active" id="tl-dot-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c1.2-3.8 4-5.6 7-5.6s5.8 1.8 7 5.6"/></svg></div>
+        <div class="tl-label active" id="tl-label-1">Identificação</div>
+        <div class="tl-line" id="tl-line-1"></div>
       </div>
-      <div class="step-body">
-        <div class="form-grid">
-          <div class="form-group full">
-            <label>Nome completo *</label>
-            <input type="text" id="nome" placeholder="Digite o nome completo do paciente" required>
-          </div>
-          <div class="form-group">
-            <label>Idade *</label>
-            <input type="number" id="idade" min="0" max="150" placeholder="Anos" required>
-          </div>
-          <div class="form-group">
-            <label>Sexo *</label>
-            <select id="sexo" required>
-              <option value="">Selecione</option>
-              <option value="M">Masculino</option>
-              <option value="F">Feminino</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Peso <span class="opt">(kg, opcional)</span></label>
-            <input type="number" id="peso" min="0" max="500" step="0.1" placeholder="Ex.: 72">
-          </div>
-          <div class="form-group">
-            <label>Altura <span class="opt">(cm, opcional)</span></label>
-            <input type="number" id="altura" min="0" max="250" placeholder="Ex.: 175">
-          </div>
-        </div>
-        <div class="btn-row">
-          <div></div>
-          <button type="button" class="btn btn-primary" onclick="goStep(2)">Próximo →</button>
-        </div>
+      <div class="tl-item" data-step="2">
+        <div class="tl-dot" id="tl-dot-2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5.5" y="4.5" width="13" height="16" rx="2"/><rect x="9" y="3" width="6" height="3" rx="1"/><path d="M8.5 11h7M8.5 14.5h7M8.5 18h4"/></svg></div>
+        <div class="tl-label" id="tl-label-2">Histórico</div>
+        <div class="tl-line" id="tl-line-2"></div>
+      </div>
+      <div class="tl-item" data-step="3">
+        <div class="tl-dot" id="tl-dot-3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h3.5l2-6 3 12 2.5-9 1.5 3H21"/></svg></div>
+        <div class="tl-label" id="tl-label-3">Sintomas</div>
+        <div class="tl-line" id="tl-line-3"></div>
+      </div>
+      <div class="tl-item" data-step="4">
+        <div class="tl-dot" id="tl-dot-4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.2c-4.4-2.8-8.7-6.4-8.7-11A5 5 0 0 1 12 6.3 5 5 0 0 1 20.7 9.2c0 4.6-4.3 8.2-8.7 11z"/><path d="M4.5 11.5h3l1.4-2.6 2 4.4 1.4-2.4h6.7"/></svg></div>
+        <div class="tl-label" id="tl-label-4">Sinais Vitais</div>
+        <div class="tl-line" id="tl-line-4"></div>
+      </div>
+      <div class="tl-item" data-step="5">
+        <div class="tl-dot" id="tl-dot-5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M8.2 12.4l2.4 2.4 5-5.2"/></svg></div>
+        <div class="tl-label" id="tl-label-5">Resultado</div>
       </div>
     </div>
 
-    <!-- STEP 2: HISTÓRICO -->
-    <div class="step-card" data-step="2">
-      <div class="step-header">
-        <div class="step-number">2</div>
-        <div class="step-title">Histórico de Saúde</div>
-        <div class="step-subtitle">Marque as condições existentes</div>
-      </div>
-      <div class="step-body">
-        <div class="form-group">
-          <label>Condições pré-existentes</label>
-        </div>
-        <div class="checkbox-grid">
-          <label class="checkbox-item" onclick="toggleCheck(this)">
-            <input type="checkbox" id="h_diabetes"><span class="ckbox">✓</span> Diabetes
-          </label>
-          <label class="checkbox-item" onclick="toggleCheck(this)">
-            <input type="checkbox" id="h_hipertensao"><span class="ckbox">✓</span> Hipertensão
-          </label>
-          <label class="checkbox-item" onclick="toggleCheck(this)">
-            <input type="checkbox" id="h_asma"><span class="ckbox">✓</span> Asma
-          </label>
-          <label class="checkbox-item" onclick="toggleCheck(this)">
-            <input type="checkbox" id="h_cardiopatia"><span class="ckbox">✓</span> Doença cardíaca
-          </label>
-          <label class="checkbox-item" onclick="toggleCheck(this)">
-            <input type="checkbox" id="h_pulmonar"><span class="ckbox">✓</span> Doença pulmonar
-          </label>
-          <label class="checkbox-item" onclick="toggleCheck(this)">
-            <input type="checkbox" id="h_renal"><span class="ckbox">✓</span> Doença renal
-          </label>
-          <label class="checkbox-item gravidez-only" onclick="toggleCheck(this)" style="display:none">
-            <input type="checkbox" id="h_gravidez"><span class="ckbox">✓</span> Gestante
-          </label>
-        </div>
-
-        <div class="form-grid" style="margin-top:16px">
-          <div class="form-group">
-            <label>Alergias <span class="opt">(separadas por vírgula)</span></label>
-            <input type="text" id="h_alergias" placeholder="Ex.: penicilina, dipirona, látex">
-          </div>
-          <div class="form-group">
-            <label>Medicamentos em uso <span class="opt">(separados por vírgula)</span></label>
-            <input type="text" id="h_medicamentos" placeholder="Ex.: losartana 50mg, metformina 500mg">
-          </div>
-          <div class="form-group full">
-            <label>Cirurgias recentes</label>
-            <input type="text" id="h_cirurgias" placeholder="Ex.: apendicectomia em jan/2025">
-          </div>
-        </div>
-
-        <div class="btn-row">
-          <button type="button" class="btn btn-ghost" onclick="goStep(1)">← Voltar</button>
-          <button type="button" class="btn btn-primary" onclick="goStep(3)">Próximo →</button>
-        </div>
-      </div>
+    <!-- EMERGÊNCIA -->
+    <div class="emergency-overlay" id="emergency-overlay">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 2.6 17.5A1.8 1.8 0 0 0 4.2 20h15.6a1.8 1.8 0 0 0 1.6-2.5L13.7 3.9a1.8 1.8 0 0 0-3.4 0z"/></svg>
+      EMERGÊNCIA DETECTADA — LIGUE SAMU 192 IMEDIATAMENTE
     </div>
 
-    <!-- STEP 3: SINTOMAS -->
-    <div class="step-card" data-step="3">
-      <div class="step-header">
-        <div class="step-number">3</div>
-        <div class="step-title">Sintomas</div>
-        <div class="step-subtitle">Descreva e detalhe os sintomas</div>
+    <!-- FORMULÁRIO -->
+    <form id="triage-form" onsubmit="return false;">
+
+      <!-- STEP 1: IDENTIFICAÇÃO -->
+      <div class="step-card active" data-step="1">
+        <div class="step-header">
+          <div class="step-number"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c1.2-3.8 4-5.6 7-5.6s5.8 1.8 7 5.6"/></svg></div>
+          <div class="step-title">Identificação do Paciente</div>
+          <div class="step-subtitle">Campos com * são obrigatórios</div>
+        </div>
+        <div class="step-body">
+          <div class="form-grid">
+            <div class="form-group full">
+              <label>Nome completo *</label>
+              <input type="text" id="nome" placeholder="Digite o nome completo do paciente" required>
+            </div>
+            <div class="form-group">
+              <label>Idade *</label>
+              <input type="number" id="idade" min="0" max="150" placeholder="Anos" required>
+            </div>
+            <div class="form-group">
+              <label>Sexo *</label>
+              <select id="sexo" required>
+                <option value="">Selecione</option>
+                <option value="M">Masculino</option>
+                <option value="F">Feminino</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Peso <span class="opt">(kg, opcional)</span></label>
+              <input type="number" id="peso" min="0" max="500" step="0.1" placeholder="Ex.: 72">
+            </div>
+            <div class="form-group">
+              <label>Altura <span class="opt">(cm, opcional)</span></label>
+              <input type="number" id="altura" min="0" max="250" placeholder="Ex.: 175">
+            </div>
+          </div>
+          <div class="btn-row">
+            <div></div>
+            <button type="button" class="btn btn-primary" onclick="goStep(2)">Próximo →</button>
+          </div>
+        </div>
       </div>
-      <div class="step-body">
-        <div class="form-group">
-          <label>Quais os sintomas principais? *</label>
-          <textarea id="sintomas_desc" rows="3" placeholder="Ex.: estou com febre há 2 dias, dor de cabeça forte e tosse seca" oninput="analisarSintomas()"></textarea>
+
+      <!-- STEP 2: HISTÓRICO -->
+      <div class="step-card" data-step="2">
+        <div class="step-header">
+          <div class="step-number"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5.5" y="4.5" width="13" height="16" rx="2"/><rect x="9" y="3" width="6" height="3" rx="1"/><path d="M8.5 11h7M8.5 14.5h7M8.5 18h4"/></svg></div>
+          <div class="step-title">Histórico de Saúde</div>
+          <div class="step-subtitle">Marque as condições existentes</div>
         </div>
+        <div class="step-body">
+          <div class="form-group">
+            <label>Condições pré-existentes</label>
+          </div>
+          <div class="checkbox-grid" style="margin-top:8px">
+            <label class="checkbox-item" onclick="toggleCheck(this)">
+              <input type="checkbox" id="h_diabetes"><span class="ckbox">✓</span> Diabetes
+            </label>
+            <label class="checkbox-item" onclick="toggleCheck(this)">
+              <input type="checkbox" id="h_hipertensao"><span class="ckbox">✓</span> Hipertensão
+            </label>
+            <label class="checkbox-item" onclick="toggleCheck(this)">
+              <input type="checkbox" id="h_asma"><span class="ckbox">✓</span> Asma
+            </label>
+            <label class="checkbox-item" onclick="toggleCheck(this)">
+              <input type="checkbox" id="h_cardiopatia"><span class="ckbox">✓</span> Doença cardíaca
+            </label>
+            <label class="checkbox-item" onclick="toggleCheck(this)">
+              <input type="checkbox" id="h_pulmonar"><span class="ckbox">✓</span> Doença pulmonar
+            </label>
+            <label class="checkbox-item" onclick="toggleCheck(this)">
+              <input type="checkbox" id="h_renal"><span class="ckbox">✓</span> Doença renal
+            </label>
+            <label class="checkbox-item gravidez-only" onclick="toggleCheck(this)" style="display:none">
+              <input type="checkbox" id="h_gravidez"><span class="ckbox">✓</span> Gestante
+            </label>
+          </div>
 
-        <div id="sintomas-detalhes"></div>
+          <div class="form-grid" style="margin-top:18px">
+            <div class="form-group">
+              <label>Alergias <span class="opt">(separadas por vírgula)</span></label>
+              <input type="text" id="h_alergias" placeholder="Ex.: penicilina, dipirona, látex">
+            </div>
+            <div class="form-group">
+              <label>Medicamentos em uso <span class="opt">(separados por vírgula)</span></label>
+              <input type="text" id="h_medicamentos" placeholder="Ex.: losartana 50mg, metformina 500mg">
+            </div>
+            <div class="form-group full">
+              <label>Cirurgias recentes</label>
+              <input type="text" id="h_cirurgias" placeholder="Ex.: apendicectomia em jan/2025">
+            </div>
+          </div>
 
-        <div class="form-group" style="margin-top:14px">
-          <label>Há quanto tempo os sintomas começaram?</label>
-          <input type="text" id="s_tempo" placeholder="Ex.: 2 dias, 5 horas, aproximadamente 1 semana">
-        </div>
-
-        <div class="btn-row">
-          <button type="button" class="btn btn-ghost" onclick="goStep(2)">← Voltar</button>
-          <button type="button" class="btn btn-primary" onclick="goStep(4)">Próximo →</button>
+          <div class="btn-row">
+            <button type="button" class="btn btn-ghost" onclick="goStep(1)">← Voltar</button>
+            <button type="button" class="btn btn-primary" onclick="goStep(3)">Próximo →</button>
+          </div>
         </div>
       </div>
+
+      <!-- STEP 3: SINTOMAS -->
+      <div class="step-card" data-step="3">
+        <div class="step-header">
+          <div class="step-number"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h3.5l2-6 3 12 2.5-9 1.5 3H21"/></svg></div>
+          <div class="step-title">Sintomas</div>
+          <div class="step-subtitle">Descreva e detalhe os sintomas</div>
+        </div>
+        <div class="step-body">
+          <div class="form-group">
+            <label>Quais os sintomas principais? *</label>
+            <textarea id="sintomas_desc" rows="3" placeholder="Ex.: estou com febre há 2 dias, dor de cabeça forte e tosse seca" oninput="analisarSintomas()"></textarea>
+          </div>
+
+          <div id="sintomas-detalhes"></div>
+
+          <div class="form-group" style="margin-top:16px">
+            <label>Há quanto tempo os sintomas começaram?</label>
+            <input type="text" id="s_tempo" placeholder="Ex.: 2 dias, 5 horas, aproximadamente 1 semana">
+          </div>
+
+          <div class="btn-row">
+            <button type="button" class="btn btn-ghost" onclick="goStep(2)">← Voltar</button>
+            <button type="button" class="btn btn-primary" onclick="goStep(4)">Próximo →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 4: SINAIS VITAIS -->
+      <div class="step-card" data-step="4">
+        <div class="step-header">
+          <div class="step-number"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.2c-4.4-2.8-8.7-6.4-8.7-11A5 5 0 0 1 12 6.3 5 5 0 0 1 20.7 9.2c0 4.6-4.3 8.2-8.7 11z"/><path d="M4.5 11.5h3l1.4-2.6 2 4.4 1.4-2.4h6.7"/></svg></div>
+          <div class="step-title">Sinais Vitais</div>
+          <div class="step-subtitle">Opcional — preencha se tiver os equipamentos</div>
+        </div>
+        <div class="step-body">
+
+          <div class="monitor-panel">
+            <div class="monitor-tile" id="mv-tile-temp"><span class="m-label">Temp.</span><span class="m-value" id="mv-temp">--</span><span class="m-unit">°C</span></div>
+            <div class="monitor-tile" id="mv-tile-pa"><span class="m-label">P.A.</span><span class="m-value" id="mv-pa" style="font-size:19px">--/--</span></div>
+            <div class="monitor-tile" id="mv-tile-fc"><span class="m-label">FC</span><span class="m-value" id="mv-fc">--</span><span class="m-unit">bpm</span></div>
+            <div class="monitor-tile" id="mv-tile-spo2"><span class="m-label">SpO₂</span><span class="m-value" id="mv-spo2">--</span><span class="m-unit">%</span></div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Temperatura <span class="opt">(°C)</span></label>
+              <input type="number" id="sv_temperatura" step="0.1" min="34" max="43" placeholder="Ex.: 38.5">
+            </div>
+            <div class="form-group">
+              <label>Pressão Arterial</label>
+              <input type="text" id="sv_pressao" placeholder="Ex.: 130/85">
+            </div>
+            <div class="form-group">
+              <label>Frequência Cardíaca <span class="opt">(bpm)</span></label>
+              <input type="number" id="sv_fc" min="30" max="250" placeholder="Ex.: 78">
+            </div>
+            <div class="form-group">
+              <label>Saturação de O₂ <span class="opt">(%)</span></label>
+              <input type="number" id="sv_saturacao" min="50" max="100" placeholder="Ex.: 97">
+            </div>
+          </div>
+
+          <div class="alert-box" id="saturacao-alert">
+            ⚠ Saturação abaixo de 90% é considerada emergência médica.
+          </div>
+
+          <div class="btn-row">
+            <button type="button" class="btn btn-ghost" onclick="goStep(3)">← Voltar</button>
+            <button type="button" class="btn btn-success" onclick="enviarTriagem()" style="font-size:15px;padding:14px 34px;">
+              ✓ Finalizar Avaliação
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </form>
+
+    <!-- LOADING -->
+    <div id="loading">
+      <div class="pulse-loader">
+        <svg viewBox="0 0 180 46" preserveAspectRatio="none"><path d="M0,23 L50,23 L60,8 L70,40 L80,12 L90,23 L180,23"/></svg>
+      </div>
+      <p class="lead">Processando dados da triagem...</p>
+      <p class="sub">Classificando nível de risco</p>
     </div>
 
-    <!-- STEP 4: SINAIS VITAIS -->
-    <div class="step-card" data-step="4">
-      <div class="step-header">
-        <div class="step-number">4</div>
-        <div class="step-title">Sinais Vitais</div>
-        <div class="step-subtitle">Opcional — preencha se tiver os equipamentos</div>
+    <!-- RESULTADO -->
+    <div id="resultado"></div>
+
+  </main>
+
+  <!-- PATIENT RAIL -->
+  <aside class="patient-rail">
+    <div class="rail-card">
+      <h5>Ficha do paciente</h5>
+      <div class="rail-name">
+        <span class="n" id="rail-nome">Paciente não identificado</span>
+        <div class="chips">
+          <span id="rail-idade">idade —</span>
+          <span id="rail-sexo">sexo —</span>
+          <span id="rail-peso">peso —</span>
+        </div>
       </div>
-      <div class="step-body">
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Temperatura <span class="opt">(°C)</span></label>
-            <input type="number" id="sv_temperatura" step="0.1" min="34" max="43" placeholder="Ex.: 38.5">
-          </div>
-          <div class="form-group">
-            <label>Pressão Arterial</label>
-            <input type="text" id="sv_pressao" placeholder="Ex.: 130/85">
-          </div>
-          <div class="form-group">
-            <label>Frequência Cardíaca <span class="opt">(bpm)</span></label>
-            <input type="number" id="sv_fc" min="30" max="250" placeholder="Ex.: 78">
-          </div>
-          <div class="form-group">
-            <label>Saturação de O₂ <span class="opt">(%)</span></label>
-            <input type="number" id="sv_saturacao" min="50" max="100" placeholder="Ex.: 97">
-          </div>
-        </div>
-
-        <div class="alert-box" id="saturacao-alert">
-          ⚠ Saturação abaixo de 90% é considerada emergência médica.
-        </div>
-
-        <div class="btn-row">
-          <button type="button" class="btn btn-ghost" onclick="goStep(3)">← Voltar</button>
-          <button type="button" class="btn btn-success" onclick="enviarTriagem()" style="font-size:15px;padding:14px 36px;">
-            ✓ Finalizar Avaliação
-          </button>
-        </div>
+      <div class="rail-steps" id="rail-steps">
+        <div class="rail-step active" data-rs="1"><span class="dot"></span>Identificação</div>
+        <div class="rail-step" data-rs="2"><span class="dot"></span>Histórico</div>
+        <div class="rail-step" data-rs="3"><span class="dot"></span>Sintomas</div>
+        <div class="rail-step" data-rs="4"><span class="dot"></span>Sinais vitais</div>
+        <div class="rail-step" data-rs="5"><span class="dot"></span>Resultado</div>
       </div>
     </div>
-
-  </form>
-
-  <!-- LOADING -->
-  <div id="loading">
-    <div class="spinner-ring"></div>
-    <p style="color:var(--gray-600);font-size:15px;font-weight:500;">Processando dados da triagem...</p>
-    <p style="color:var(--gray-500);font-size:13px;margin-top:4px;">Classificando nível de risco</p>
-  </div>
-
-  <!-- RESULTADO -->
-  <div id="resultado"></div>
-
+    <div class="rail-emergency">
+      <b>Emergência</b>
+      Sinais de gravidade (dor no peito irradiando, falta de ar em repouso, saturação abaixo de 90%) exigem atendimento imediato. Ligue <strong>SAMU 192</strong>.
+    </div>
+  </aside>
 </div>
 
 <script>
   // ========== TIMELINE ==========
   let currentStep = 1;
   const totalSteps = 4;
+
+  function syncRail(n, done) {
+    document.querySelectorAll('.rail-step').forEach(el => {
+      const idx = parseInt(el.dataset.rs);
+      el.classList.toggle('active', idx === n);
+      el.classList.toggle('done', done ? idx <= n : idx < n);
+    });
+  }
 
   function goStep(n) {
     if (n < 1 || n > totalSteps) return;
@@ -800,6 +752,7 @@
       l.classList.toggle('done', idx < n);
       l.classList.toggle('active', idx === n);
     });
+    syncRail(n, false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -810,7 +763,7 @@
       const sexo = document.getElementById('sexo').value;
       if (!nome) { mostrarErro('nome', 'Nome é obrigatório'); return false; }
       if (!idade) { mostrarErro('idade', 'Idade é obrigatória'); return false; }
-      if (!sexo) { document.getElementById('sexo').style.borderColor = 'var(--danger)'; return false; }
+      if (!sexo) { document.getElementById('sexo').style.borderColor = 'var(--vermelho)'; return false; }
       return true;
     }
     return true;
@@ -876,8 +829,8 @@
             <input type="number" id="s_dor_intensidade" min="0" max="10" placeholder="Ex.: 7">
           </div>
         </div>
-        <div id="s_dor_peito_box" style="display:none;margin-top:10px;padding:12px;background:#ffebee;border-radius:8px;border:1px solid #ffcdd2;">
-          <p style="font-size:12px;font-weight:600;color:#c62828;margin-bottom:8px;">🚨 Dor no peito — sinais de alerta</p>
+        <div id="s_dor_peito_box" style="display:none;margin-top:10px;padding:12px;background:var(--vermelho-bg);border-radius:8px;border:1px solid var(--vermelho-line);">
+          <p style="font-size:12px;font-weight:700;color:var(--vermelho);margin-bottom:8px;">🚨 Dor no peito — sinais de alerta</p>
           <div class="checkbox-grid" style="grid-template-columns:1fr;">
             <label class="checkbox-item" onclick="toggleCheck(this)">
               <input type="checkbox" id="s_dor_peito_irradia"><span class="ckbox">✓</span> Irradia para braço, costas ou mandíbula
@@ -1063,11 +1016,21 @@
       mostrarResultado(result);
     } catch (err) {
       document.getElementById('loading').innerHTML = `
-        <p style="color:var(--danger);font-size:16px;">❌ Erro de conexão com o servidor.</p>
-        <p style="color:var(--gray-500);font-size:13px;margin-top:8px;">Verifique se o Flask está rodando.</p>
+        <p style="color:var(--vermelho);font-size:16px;font-weight:700;">❌ Erro de conexão com o servidor.</p>
+        <p style="color:var(--ink-faint);font-size:13px;margin-top:8px;font-family:var(--f-mono);">Verifique se o Flask está rodando.</p>
         <button class="btn btn-primary" onclick="novaTriagem()" style="margin-top:16px;">Tentar novamente</button>
       `;
     }
+  }
+
+  // ========== CLASSIFICAÇÃO DE SINAIS PARA O MONITOR ==========
+  function classificarVital(tipo, valor) {
+    if (valor === null || valor === undefined || valor === '' || isNaN(valor)) return '';
+    const v = parseFloat(valor);
+    if (tipo === 'temp') return v >= 38 ? 'crit' : v >= 37.5 ? 'warn' : '';
+    if (tipo === 'fc') return (v < 45 || v > 130) ? 'crit' : (v < 55 || v > 110) ? 'warn' : '';
+    if (tipo === 'spo2') return v < 90 ? 'crit' : v < 95 ? 'warn' : '';
+    return '';
   }
 
   // ========== MOSTRAR RESULTADO ==========
@@ -1108,16 +1071,16 @@
     let sinaisHTML = '';
     if (r.sinais_vitais) {
       const sv = r.sinais_vitais;
-      const itens = [];
-      if (sv.temperatura) itens.push(`🌡 Temperatura: ${sv.temperatura}°C`);
-      if (sv.pressao_arterial) itens.push(`❤ PA: ${sv.pressao_arterial}`);
-      if (sv.frequencia_cardiaca) itens.push(`💓 FC: ${sv.frequencia_cardiaca} bpm`);
-      if (sv.saturacao) itens.push(`🫁 SatO₂: ${sv.saturacao}%`);
-      if (itens.length > 0) {
+      const tiles = [];
+      if (sv.temperatura) tiles.push(`<div class="monitor-tile ${classificarVital('temp', sv.temperatura)}"><span class="m-label">Temp.</span><span class="m-value">${sv.temperatura}<span class="m-unit">°C</span></span></div>`);
+      if (sv.pressao_arterial) tiles.push(`<div class="monitor-tile"><span class="m-label">P.A.</span><span class="m-value" style="font-size:19px">${sv.pressao_arterial}</span></div>`);
+      if (sv.frequencia_cardiaca) tiles.push(`<div class="monitor-tile ${classificarVital('fc', sv.frequencia_cardiaca)}"><span class="m-label">FC</span><span class="m-value">${sv.frequencia_cardiaca}<span class="m-unit">bpm</span></span></div>`);
+      if (sv.saturacao) tiles.push(`<div class="monitor-tile ${classificarVital('spo2', sv.saturacao)}"><span class="m-label">SpO₂</span><span class="m-value">${sv.saturacao}<span class="m-unit">%</span></span></div>`);
+      if (tiles.length > 0) {
         sinaisHTML = `
           <div class="result-section">
             <h3>Sinais vitais</h3>
-            <div style="display:flex;flex-wrap:wrap;gap:10px;">${itens.map(i => `<span style="background:var(--gray-100);padding:6px 14px;border-radius:6px;font-size:13px;font-weight:500;">${i}</span>`).join('')}</div>
+            <div class="monitor-panel" style="margin-bottom:0;grid-template-columns:repeat(${tiles.length},1fr)">${tiles.join('')}</div>
           </div>`;
       }
     }
@@ -1133,7 +1096,7 @@
       <div class="result-body">
         <div class="result-section">
           <h3>Paciente</h3>
-          <p style="font-size:16px;font-weight:600;">${nome}</p>
+          <p style="font-size:16px;font-weight:700;">${nome}</p>
           <div class="result-patient-info">
             ${idade ? `<span>${idade}</span>` : ''}
             ${sexo ? `<span>${sexo}</span>` : ''}
@@ -1144,7 +1107,7 @@
         <div class="result-section">
           <h3>Sintomas relatados</h3>
           <p>${sintomasLista.join(' · ')}</p>
-          ${r.tempo_sintomas ? `<p style="color:var(--gray-600);font-size:13px;margin-top:4px;">⏱ ${r.tempo_sintomas}</p>` : ''}
+          ${r.tempo_sintomas ? `<p style="color:var(--ink-faint);font-size:12.5px;margin-top:4px;font-family:var(--f-mono);">⏱ ${r.tempo_sintomas}</p>` : ''}
         </div>` : ''}
 
         ${sinaisHTML}
@@ -1188,6 +1151,7 @@
       }
     }
     document.querySelector('.timeline').style.display = 'flex';
+    syncRail(5, true);
   }
 
   // ========== NOVA TRIAGEM ==========
@@ -1197,9 +1161,11 @@
     document.getElementById('emergency-overlay').classList.remove('show');
     document.getElementById('loading').classList.remove('show');
     document.getElementById('loading').innerHTML = `
-      <div class="spinner-ring"></div>
-      <p style="color:var(--gray-600);font-size:15px;font-weight:500;">Processando dados da triagem...</p>
-      <p style="color:var(--gray-500);font-size:13px;margin-top:4px;">Classificando nível de risco</p>
+      <div class="pulse-loader">
+        <svg viewBox="0 0 180 46" preserveAspectRatio="none"><path d="M0,23 L50,23 L60,8 L70,40 L80,12 L90,23 L180,23"/></svg>
+      </div>
+      <p class="lead">Processando dados da triagem...</p>
+      <p class="sub">Classificando nível de risco</p>
     `;
     document.getElementById('triage-form').style.display = 'block';
     document.getElementById('triage-form').reset();
@@ -1210,6 +1176,13 @@
     });
     document.querySelector('.gravidez-only').style.display = 'none';
     document.querySelector('.timeline').style.display = 'flex';
+    ['mv-temp','mv-fc','mv-spo2'].forEach(id => { document.getElementById(id).textContent = '--'; });
+    document.getElementById('mv-pa').textContent = '--/--';
+    ['mv-tile-temp','mv-tile-fc','mv-tile-spo2'].forEach(id => document.getElementById(id).className = 'monitor-tile');
+    document.getElementById('rail-nome').textContent = 'Paciente não identificado';
+    document.getElementById('rail-idade').textContent = 'idade —';
+    document.getElementById('rail-sexo').textContent = 'sexo —';
+    document.getElementById('rail-peso').textContent = 'peso —';
     goStep(1);
     document.getElementById('nome').focus();
   }
@@ -1229,6 +1202,52 @@
         }
       }
     }
+  });
+
+  // ========== RELÓGIO AO VIVO ==========
+  function tickClock() {
+    const el = document.getElementById('live-clock');
+    if (el) el.textContent = new Date().toLocaleTimeString('pt-BR');
+  }
+  tickClock();
+  setInterval(tickClock, 1000);
+
+  // ========== FICHA DO PACIENTE (aside) — leitura ao vivo ==========
+  function atualizarFicha() {
+    const nome = document.getElementById('nome').value.trim();
+    document.getElementById('rail-nome').textContent = nome || 'Paciente não identificado';
+    const idade = document.getElementById('idade').value;
+    document.getElementById('rail-idade').textContent = idade ? `${idade} anos` : 'idade —';
+    const sexoVal = document.getElementById('sexo').value;
+    document.getElementById('rail-sexo').textContent = sexoVal === 'M' ? 'masculino' : sexoVal === 'F' ? 'feminino' : 'sexo —';
+    const peso = document.getElementById('peso').value;
+    document.getElementById('rail-peso').textContent = peso ? `${peso} kg` : 'peso —';
+  }
+  ['nome', 'idade', 'sexo', 'peso'].forEach(id => {
+    document.getElementById(id).addEventListener('input', atualizarFicha);
+    document.getElementById(id).addEventListener('change', atualizarFicha);
+  });
+
+  // ========== PAINEL DE MONITOR AO VIVO (step 4) ==========
+  function atualizarMonitor() {
+    const temp = document.getElementById('sv_temperatura').value;
+    const pa = document.getElementById('sv_pressao').value;
+    const fc = document.getElementById('sv_fc').value;
+    const spo2 = document.getElementById('sv_saturacao').value;
+
+    document.getElementById('mv-temp').innerHTML = temp ? `${temp}<span class="m-unit">°C</span>` : '--';
+    document.getElementById('mv-tile-temp').className = 'monitor-tile ' + classificarVital('temp', temp);
+
+    document.getElementById('mv-pa').textContent = pa || '--/--';
+
+    document.getElementById('mv-fc').innerHTML = fc ? `${fc}<span class="m-unit">bpm</span>` : '--';
+    document.getElementById('mv-tile-fc').className = 'monitor-tile ' + classificarVital('fc', fc);
+
+    document.getElementById('mv-spo2').innerHTML = spo2 ? `${spo2}<span class="m-unit">%</span>` : '--';
+    document.getElementById('mv-tile-spo2').className = 'monitor-tile ' + classificarVital('spo2', spo2);
+  }
+  ['sv_temperatura', 'sv_pressao', 'sv_fc', 'sv_saturacao'].forEach(id => {
+    document.getElementById(id).addEventListener('input', atualizarMonitor);
   });
 </script>
 
