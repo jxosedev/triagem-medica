@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIS-TRIAGEM — Sistema de Classificação de Risco</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --primary: #005b96;
+    --primary-dark: #003f6b;
+    --primary-light: #e8f4fd;
+    --accent: #00a1b0;
+    --success: #2e7d32;
+    --success-bg: #e8f5e9;
+    --warning: #f57f17;
+    --warning-bg: #fff8e1;
+    --orange: #e65100;
+    --orange-bg: #fff3e0;
+    --danger: #c62828;
+    --danger-bg: #ffebee;
+    --gray-50: #fafafa;
+    --gray-100: #f5f5f5;
+    --gray-200: #eeeeee;
+    --gray-300: #e0e0e0;
+    --gray-400: #bdbdbd;
+    --gray-500: #9e9e9e;
+    --gray-600: #757575;
+    --gray-700: #616161;
+    --gray-800: #424242;
+    --gray-900: #212121;
+    --radius: 12px;
+    --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+    --shadow-lg: 0 10px 25px rgba(0,0,0,.1), 0 4px 10px rgba(0,0,0,.06);
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--gray-100);
+    color: var(--gray-900);
+    min-height: 100vh;
+  }
+
+  /* HEADER SISTEMA */
+  .sys-header {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, var(--accent) 100%);
+    color: #fff;
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,.15);
+  }
+  .sys-header-inner {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .sys-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .sys-brand-icon {
+    width: 42px;
+    height: 42px;
+    background: rgba(255,255,255,.2);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+  }
+  .sys-brand-text h1 {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: .3px;
+  }
+  .sys-brand-text span {
+    font-size: 11px;
+    opacity: .8;
+    display: block;
+    font-weight: 400;
+    letter-spacing: .5px;
+  }
+  .sys-badge {
+    background: rgba(255,255,255,.15);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .5px;
+    border: 1px solid rgba(255,255,255,.2);
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+
+  /* BANNER DE ATENÇÃO */
+  .notice-bar {
+    background: #fff;
+    border-left: 4px solid var(--primary);
+    padding: 12px 18px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--gray-700);
+    box-shadow: var(--shadow);
+  }
+  .notice-bar strong { color: var(--primary); }
+
+  /* TIMELINE */
+  .timeline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    padding: 0 4px;
+  }
+  .tl-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+    position: relative;
+  }
+  .tl-dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--gray-300);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    transition: all .3s;
+    z-index: 2;
+  }
+  .tl-dot.active { background: var(--primary); transform: scale(1.1); box-shadow: 0 0 0 4px var(--primary-light); }
+  .tl-dot.done { background: var(--success); }
+  .tl-label {
+    font-size: 10px;
+    color: var(--gray-500);
+    text-align: center;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+  }
+  .tl-label.active { color: var(--primary); font-weight: 600; }
+  .tl-label.done { color: var(--success); }
+  .tl-line {
+    position: absolute;
+    top: 16px;
+    left: calc(50% + 20px);
+    right: calc(-50% + 20px);
+    height: 2px;
+    background: var(--gray-300);
+    z-index: 0;
+  }
+  .tl-line.active { background: var(--primary); }
+  .tl-line.done { background: var(--success); }
+  .tl-item:last-child .tl-line { display: none; }
+
+  /* CARDS DE ETAPA */
+  .step-card {
+    background: #fff;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+    overflow: hidden;
+    transition: all .3s;
+    display: none;
+  }
+  .step-card.active { display: block; animation: fadeIn .35s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .step-header {
+    background: var(--primary-light);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid rgba(0,91,150,.1);
+  }
+  .step-number {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .step-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--primary-dark);
+  }
+  .step-subtitle {
+    font-size: 12px;
+    color: var(--gray-600);
+    margin-left: auto;
+  }
+  .step-body { padding: 24px; }
+
+  /* FORMULÁRIO */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .form-grid .full { grid-column: 1 / -1; }
+  .form-group { display: flex; flex-direction: column; gap: 4px; }
+  .form-group label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-700);
+    text-transform: uppercase;
+    letter-spacing: .4px;
+  }
+  .form-group label .opt { font-weight: 400; text-transform: none; color: var(--gray-500); letter-spacing: 0; }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 10px 14px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    transition: all .2s;
+    background: #fff;
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(0,91,150,.12);
+  }
+  .form-group textarea { resize: vertical; min-height: 80px; }
+  .form-group input.error { border-color: var(--danger); box-shadow: 0 0 0 3px rgba(198,40,40,.12); }
+
+  .checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 6px;
+  }
+  .checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all .15s;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1.5px solid var(--gray-200);
+    user-select: none;
+  }
+  .checkbox-item:hover { border-color: var(--primary); background: var(--primary-light); }
+  .checkbox-item.checked { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+  .checkbox-item input[type="checkbox"] { display: none; }
+  .checkbox-item .ckbox {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--gray-400);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: #fff;
+    transition: all .15s;
+    flex-shrink: 0;
+  }
+  .checkbox-item.checked .ckbox { background: var(--primary); border-color: var(--primary); }
+
+  /* SUB-SEÇÃO SINTOMAS */
+  .sub-section {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 10px;
+    padding: 18px;
+    margin-top: 14px;
+    display: none;
+    animation: fadeIn .25s ease;
+  }
+  .sub-section.show { display: block; }
+  .sub-section h4 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sub-section h4 .ico { font-size: 16px; }
+  .sub-section .form-grid { gap: 12px; }
+
+  .alert-box {
+    background: var(--danger-bg);
+    border: 1px solid rgba(198,40,40,.2);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--danger);
+    margin-top: 10px;
+    display: none;
+    font-weight: 500;
+  }
+  .alert-box.show { display: block; }
+
+  /* BOTÕES */
+  .btn-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 8px;
+  }
+  .btn {
+    padding: 12px 28px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: all .2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn:active { transform: scale(.97); }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: var(--primary-dark); box-shadow: 0 4px 12px rgba(0,91,150,.3); }
+  .btn-outline { background: transparent; color: var(--primary); border: 1.5px solid var(--primary); }
+  .btn-outline:hover { background: var(--primary-light); }
+  .btn-success { background: var(--success); color: #fff; }
+  .btn-success:hover { background: #1b5e20; box-shadow: 0 4px 12px rgba(46,125,50,.3); }
+  .btn-success:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; }
+  .btn-ghost { background: transparent; color: var(--gray-600); border: 1px solid var(--gray-300); }
+  .btn-ghost:hover { background: var(--gray-100); }
+
+  /* RESULTADO */
+  #resultado { display: none; }
+  #resultado.show { display: block; animation: fadeIn .4s ease; }
+
+  .result-header {
+    text-align: center;
+    padding: 24px;
+    border-radius: var(--radius) var(--radius) 0 0;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+  .result-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 30% 50%, rgba(255,255,255,.1) 0%, transparent 60%);
+  }
+  .result-header h2 { font-size: 22px; position: relative; }
+  .result-header .result-tag {
+    display: inline-block;
+    padding: 6px 20px;
+    border-radius: 20px;
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    margin-top: 8px;
+    position: relative;
+  }
+  .result-header .result-sub {
+    font-size: 13px;
+    opacity: .85;
+    margin-top: 6px;
+    position: relative;
+  }
+
+  .bg-verde { background: linear-gradient(135deg, #1b5e20, #2e7d32); }
+  .bg-verde .result-tag { background: rgba(255,255,255,.2); }
+  .bg-amarelo { background: linear-gradient(135deg, #e65100, #f57f17); }
+  .bg-amarelo .result-tag { background: rgba(255,255,255,.2); }
+  .bg-laranja { background: linear-gradient(135deg, #bf360c, #e65100); }
+  .bg-laranja .result-tag { background: rgba(255,255,255,.2); }
+  .bg-vermelho { background: linear-gradient(135deg, #b71c1c, #c62828); }
+  .bg-vermelho .result-tag { background: rgba(255,255,255,.2); }
+
+  .result-body {
+    background: #fff;
+    border-radius: 0 0 var(--radius) var(--radius);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+  .result-section {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+  .result-section:last-child { border-bottom: none; }
+  .result-section h3 {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    margin-bottom: 6px;
+  }
+  .result-section p { font-size: 14px; line-height: 1.7; color: var(--gray-800); }
+  .result-section ul { list-style: none; padding: 0; }
+  .result-section ul li {
+    padding: 6px 0 6px 20px;
+    font-size: 14px;
+    color: var(--gray-800);
+    position: relative;
+    line-height: 1.5;
+  }
+  .result-section ul li::before {
+    content: '›';
+    position: absolute;
+    left: 4px;
+    font-weight: 700;
+    color: var(--primary);
+  }
+  .result-orientacao {
+    background: var(--primary-light);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--primary-dark);
+    border-left: 4px solid var(--primary);
+  }
+
+  .result-patient-info {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: var(--gray-600);
+  }
+  .result-patient-info span { background: var(--gray-100); padding: 2px 10px; border-radius: 4px; }
+
+  .result-actions {
+    padding: 16px 24px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    border-top: 1px solid var(--gray-200);
+  }
+
+  /* EMERGÊNCIA */
+  .emergency-overlay {
+    background: var(--danger);
+    color: #fff;
+    text-align: center;
+    padding: 16px 24px;
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+    font-weight: 700;
+    font-size: 16px;
+    animation: pulse 2s infinite;
+    display: none;
+  }
+  .emergency-overlay.show { display: block; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .85; } }
+
+  /* LOADING */
+  #loading {
+    display: none;
+    text-align: center;
+    padding: 60px 24px;
+    background: #fff;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+  #loading.show { display: block; }
+  .spinner-ring {
+    width: 52px;
+    height: 52px;
+    border: 4px solid var(--gray-200);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+    margin: 0 auto 16px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* RESPONSIVO */
+  @media (max-width: 700px) {
+    .container { padding: 14px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .checkbox-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+    .sys-header-inner { padding: 10px 14px; }
+    .sys-brand-text h1 { font-size: 15px; }
+    .sys-badge { display: none; }
+    .tl-label { display: none; }
+    .step-body { padding: 16px; }
+    .step-header { padding: 12px 16px; }
+    .btn-row { flex-direction: column; }
+    .btn-row .btn { justify-content: center; }
+  }
+
+  /* PRINT */
+  @media print {
+    .sys-header { display: none; }
+    .notice-bar { display: none; }
+    .btn-row { display: none; }
+    .result-actions { display: none; }
+    #loading { display: none !important; }
+    .step-card { box-shadow: none; border: 1px solid #ddd; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="sys-header">
+  <div class="sys-header-inner">
+    <div class="sys-brand">
+      <div class="sys-brand-icon">🏥</div>
+      <div class="sys-brand-text">
+        <h1>SIS-TRIAGEM</h1>
+        <span>Sistema de Classificação de Risco · v1.0</span>
+      </div>
+    </div>
+    <div class="sys-badge">⚠ Uso exclusivo para triagem inicial</div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- AVISO -->
+  <div class="notice-bar">
+    <span style="font-size:18px;">ℹ️</span>
+    <div>Este sistema é um <strong>apoio à decisão</strong> para triagem clínica. Não substitui avaliação médica profissional. <strong>Em caso de emergência, ligue SAMU 192.</strong></div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="timeline" id="timeline">
+    <div class="tl-item" data-step="1">
+      <div class="tl-dot active" id="tl-dot-1">1</div>
+      <div class="tl-label active" id="tl-label-1">Identificação</div>
+      <div class="tl-line" id="tl-line-1"></div>
+    </div>
+    <div class="tl-item" data-step="2">
+      <div class="tl-dot" id="tl-dot-2">2</div>
+      <div class="tl-label" id="tl-label-2">Histórico</div>
+      <div class="tl-line" id="tl-line-2"></div>
+    </div>
+    <div class="tl-item" data-step="3">
+      <div class="tl-dot" id="tl-dot-3">3</div>
+      <div class="tl-label" id="tl-label-3">Sintomas</div>
+      <div class="tl-line" id="tl-line-3"></div>
+    </div>
+    <div class="tl-item" data-step="4">
+      <div class="tl-dot" id="tl-dot-4">4</div>
+      <div class="tl-label" id="tl-label-4">Sinais Vitais</div>
+      <div class="tl-line" id="tl-line-4"></div>
+    </div>
+    <div class="tl-item" data-step="5">
+      <div class="tl-dot" id="tl-dot-5">5</div>
+      <div class="tl-label" id="tl-label-5">Resultado</div>
+    </div>
+  </div>
+
+  <!-- EMERGÊNCIA -->
+  <div class="emergency-overlay" id="emergency-overlay">
+    🚨 EMERGÊNCIA DETECTADA — LIGUE SAMU 192 IMEDIATAMENTE
+  </div>
+
+  <!-- FORMULÁRIO -->
+  <form id="triage-form" onsubmit="return false;">
+
+    <!-- STEP 1: IDENTIFICAÇÃO -->
+    <div class="step-card active" data-step="1">
+      <div class="step-header">
+        <div class="step-number">1</div>
+        <div class="step-title">Identificação do Paciente</div>
+        <div class="step-subtitle">Campos com * são obrigatórios</div>
+      </div>
+      <div class="step-body">
+        <div class="form-grid">
+          <div class="form-group full">
+            <label>Nome completo *</label>
+            <input type="text" id="nome" placeholder="Digite o nome completo do paciente" required>
+          </div>
+          <div class="form-group">
+            <label>Idade *</label>
+            <input type="number" id="idade" min="0" max="150" placeholder="Anos" required>
+          </div>
+          <div class="form-group">
+            <label>Sexo *</label>
+            <select id="sexo" required>
+              <option value="">Selecione</option>
+              <option value="M">Masculino</option>
+              <option value="F">Feminino</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Peso <span class="opt">(kg, opcional)</span></label>
+            <input type="number" id="peso" min="0" max="500" step="0.1" placeholder="Ex.: 72">
+          </div>
+          <div class="form-group">
+            <label>Altura <span class="opt">(cm, opcional)</span></label>
+            <input type="number" id="altura" min="0" max="250" placeholder="Ex.: 175">
+          </div>
+        </div>
+        <div class="btn-row">
+          <div></div>
+          <button type="button" class="btn btn-primary" onclick="goStep(2)">Próximo →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2: HISTÓRICO -->
+    <div class="step-card" data-step="2">
+      <div class="step-header">
+        <div class="step-number">2</div>
+        <div class="step-title">Histórico de Saúde</div>
+        <div class="step-subtitle">Marque as condições existentes</div>
+      </div>
+      <div class="step-body">
+        <div class="form-group">
+          <label>Condições pré-existentes</label>
+        </div>
+        <div class="checkbox-grid">
+          <label class="checkbox-item" onclick="toggleCheck(this)">
+            <input type="checkbox" id="h_diabetes"><span class="ckbox">✓</span> Diabetes
+          </label>
+          <label class="checkbox-item" onclick="toggleCheck(this)">
+            <input type="checkbox" id="h_hipertensao"><span class="ckbox">✓</span> Hipertensão
+          </label>
+          <label class="checkbox-item" onclick="toggleCheck(this)">
+            <input type="checkbox" id="h_asma"><span class="ckbox">✓</span> Asma
+          </label>
+          <label class="checkbox-item" onclick="toggleCheck(this)">
+            <input type="checkbox" id="h_cardiopatia"><span class="ckbox">✓</span> Doença cardíaca
+          </label>
+          <label class="checkbox-item" onclick="toggleCheck(this)">
+            <input type="checkbox" id="h_pulmonar"><span class="ckbox">✓</span> Doença pulmonar
+          </label>
+          <label class="checkbox-item" onclick="toggleCheck(this)">
+            <input type="checkbox" id="h_renal"><span class="ckbox">✓</span> Doença renal
+          </label>
+          <label class="checkbox-item gravidez-only" onclick="toggleCheck(this)" style="display:none">
+            <input type="checkbox" id="h_gravidez"><span class="ckbox">✓</span> Gestante
+          </label>
+        </div>
+
+        <div class="form-grid" style="margin-top:16px">
+          <div class="form-group">
+            <label>Alergias <span class="opt">(separadas por vírgula)</span></label>
+            <input type="text" id="h_alergias" placeholder="Ex.: penicilina, dipirona, látex">
+          </div>
+          <div class="form-group">
+            <label>Medicamentos em uso <span class="opt">(separados por vírgula)</span></label>
+            <input type="text" id="h_medicamentos" placeholder="Ex.: losartana 50mg, metformina 500mg">
+          </div>
+          <div class="form-group full">
+            <label>Cirurgias recentes</label>
+            <input type="text" id="h_cirurgias" placeholder="Ex.: apendicectomia em jan/2025">
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button type="button" class="btn btn-ghost" onclick="goStep(1)">← Voltar</button>
+          <button type="button" class="btn btn-primary" onclick="goStep(3)">Próximo →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3: SINTOMAS -->
+    <div class="step-card" data-step="3">
+      <div class="step-header">
+        <div class="step-number">3</div>
+        <div class="step-title">Sintomas</div>
+        <div class="step-subtitle">Descreva e detalhe os sintomas</div>
+      </div>
+      <div class="step-body">
+        <div class="form-group">
+          <label>Quais os sintomas principais? *</label>
+          <textarea id="sintomas_desc" rows="3" placeholder="Ex.: estou com febre há 2 dias, dor de cabeça forte e tosse seca" oninput="analisarSintomas()"></textarea>
+        </div>
+
+        <div id="sintomas-detalhes"></div>
+
+        <div class="form-group" style="margin-top:14px">
+          <label>Há quanto tempo os sintomas começaram?</label>
+          <input type="text" id="s_tempo" placeholder="Ex.: 2 dias, 5 horas, aproximadamente 1 semana">
+        </div>
+
+        <div class="btn-row">
+          <button type="button" class="btn btn-ghost" onclick="goStep(2)">← Voltar</button>
+          <button type="button" class="btn btn-primary" onclick="goStep(4)">Próximo →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 4: SINAIS VITAIS -->
+    <div class="step-card" data-step="4">
+      <div class="step-header">
+        <div class="step-number">4</div>
+        <div class="step-title">Sinais Vitais</div>
+        <div class="step-subtitle">Opcional — preencha se tiver os equipamentos</div>
+      </div>
+      <div class="step-body">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Temperatura <span class="opt">(°C)</span></label>
+            <input type="number" id="sv_temperatura" step="0.1" min="34" max="43" placeholder="Ex.: 38.5">
+          </div>
+          <div class="form-group">
+            <label>Pressão Arterial</label>
+            <input type="text" id="sv_pressao" placeholder="Ex.: 130/85">
+          </div>
+          <div class="form-group">
+            <label>Frequência Cardíaca <span class="opt">(bpm)</span></label>
+            <input type="number" id="sv_fc" min="30" max="250" placeholder="Ex.: 78">
+          </div>
+          <div class="form-group">
+            <label>Saturação de O₂ <span class="opt">(%)</span></label>
+            <input type="number" id="sv_saturacao" min="50" max="100" placeholder="Ex.: 97">
+          </div>
+        </div>
+
+        <div class="alert-box" id="saturacao-alert">
+          ⚠ Saturação abaixo de 90% é considerada emergência médica.
+        </div>
+
+        <div class="btn-row">
+          <button type="button" class="btn btn-ghost" onclick="goStep(3)">← Voltar</button>
+          <button type="button" class="btn btn-success" onclick="enviarTriagem()" style="font-size:15px;padding:14px 36px;">
+            ✓ Finalizar Avaliação
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </form>
+
+  <!-- LOADING -->
+  <div id="loading">
+    <div class="spinner-ring"></div>
+    <p style="color:var(--gray-600);font-size:15px;font-weight:500;">Processando dados da triagem...</p>
+    <p style="color:var(--gray-500);font-size:13px;margin-top:4px;">Classificando nível de risco</p>
+  </div>
+
+  <!-- RESULTADO -->
+  <div id="resultado"></div>
+
+</div>
+
+<script>
+  // ========== TIMELINE ==========
+  let currentStep = 1;
+  const totalSteps = 4;
+
+  function goStep(n) {
+    if (n < 1 || n > totalSteps) return;
+    if (n > currentStep) {
+      if (!validarStep(currentStep)) return;
+    }
+    currentStep = n;
+    document.querySelectorAll('.step-card').forEach(c => c.classList.remove('active'));
+    document.querySelector(`.step-card[data-step="${n}"]`).classList.add('active');
+    document.querySelectorAll('.tl-dot').forEach((d, i) => {
+      const idx = i + 1;
+      d.classList.toggle('active', idx === n);
+      d.classList.toggle('done', idx < n);
+    });
+    document.querySelectorAll('.tl-label').forEach((l, i) => {
+      const idx = i + 1;
+      l.classList.toggle('active', idx === n);
+      l.classList.toggle('done', idx < n);
+    });
+    document.querySelectorAll('.tl-line').forEach((l, i) => {
+      const idx = i + 1;
+      l.classList.toggle('done', idx < n);
+      l.classList.toggle('active', idx === n);
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function validarStep(n) {
+    if (n === 1) {
+      const nome = document.getElementById('nome').value.trim();
+      const idade = document.getElementById('idade').value.trim();
+      const sexo = document.getElementById('sexo').value;
+      if (!nome) { mostrarErro('nome', 'Nome é obrigatório'); return false; }
+      if (!idade) { mostrarErro('idade', 'Idade é obrigatória'); return false; }
+      if (!sexo) { document.getElementById('sexo').style.borderColor = 'var(--danger)'; return false; }
+      return true;
+    }
+    return true;
+  }
+
+  function mostrarErro(id, msg) {
+    const el = document.getElementById(id);
+    el.classList.add('error');
+    el.focus();
+    setTimeout(() => el.classList.remove('error'), 2500);
+  }
+
+  // ========== CHECKBOX ESTILIZADO ==========
+  function toggleCheck(el) {
+    const cb = el.querySelector('input[type="checkbox"]');
+    cb.checked = !cb.checked;
+    el.classList.toggle('checked', cb.checked);
+    if (cb.id === 'h_gravidez' && cb.checked) {
+      // gestante marcada
+    }
+  }
+
+  document.getElementById('sexo').addEventListener('change', function() {
+    const g = document.querySelector('.gravidez-only');
+    if (this.value === 'F') {
+      g.style.display = 'flex';
+    } else {
+      g.style.display = 'none';
+      document.getElementById('h_gravidez').checked = false;
+      g.classList.remove('checked');
+    }
+  });
+
+  // ========== SINTOMAS DINÂMICOS ==========
+  const sintomasConfig = {
+    febre: {
+      label: 'Febre',
+      icon: '🌡',
+      campos: `
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Temperatura <span class="opt">(°C, opcional)</span></label>
+            <input type="number" id="s_febre_temp" step="0.1" min="34" max="43" placeholder="Ex.: 38.5">
+          </div>
+          <div class="form-group">
+            <label>Há quantos dias?</label>
+            <input type="number" id="s_febre_dias" min="0" max="60" placeholder="Ex.: 3">
+          </div>
+        </div>
+      `
+    },
+    'dor|dor no peito': {
+      label: 'Dor',
+      icon: '💉',
+      campos: `
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Em qual parte do corpo?</label>
+            <input type="text" id="s_dor_local" placeholder="Ex.: cabeça, abdômen, peito" oninput="verificarDorPeito()">
+          </div>
+          <div class="form-group">
+            <label>Intensidade <span class="opt">(0 a 10)</span></label>
+            <input type="number" id="s_dor_intensidade" min="0" max="10" placeholder="Ex.: 7">
+          </div>
+        </div>
+        <div id="s_dor_peito_box" style="display:none;margin-top:10px;padding:12px;background:#ffebee;border-radius:8px;border:1px solid #ffcdd2;">
+          <p style="font-size:12px;font-weight:600;color:#c62828;margin-bottom:8px;">🚨 Dor no peito — sinais de alerta</p>
+          <div class="checkbox-grid" style="grid-template-columns:1fr;">
+            <label class="checkbox-item" onclick="toggleCheck(this)">
+              <input type="checkbox" id="s_dor_peito_irradia"><span class="ckbox">✓</span> Irradia para braço, costas ou mandíbula
+            </label>
+            <label class="checkbox-item" onclick="toggleCheck(this)">
+              <input type="checkbox" id="s_dor_peito_suando"><span class="ckbox">✓</span> Está suando frio
+            </label>
+            <label class="checkbox-item" onclick="toggleCheck(this)">
+              <input type="checkbox" id="s_dor_peito_falta_ar"><span class="ckbox">✓</span> Está com falta de ar
+            </label>
+          </div>
+        </div>
+      `
+    },
+    'falta de ar|respir|ofegante|fôlego': {
+      label: 'Falta de ar',
+      icon: '🫁',
+      campos: `
+        <div class="checkbox-grid" style="grid-template-columns:1fr 1fr;">
+          <label class="checkbox-item" onclick="toggleCheck(this)">
+            <input type="checkbox" id="s_falta_ar_repouso"><span class="ckbox">✓</span> Ocorre mesmo em repouso
+          </label>
+          <label class="checkbox-item" onclick="toggleCheck(this)">
+            <input type="checkbox" id="s_falta_ar_moderada"><span class="ckbox">✓</span> Cansaço ao falar frases
+          </label>
+        </div>
+      `
+    },
+    'tosse|tossindo|catarr': {
+      label: 'Tosse',
+      icon: '🗣',
+      campos: `
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Tipo de tosse</label>
+            <select id="s_tosse_tipo">
+              <option value="seca">Seca</option>
+              <option value="com catarro">Com catarro (produtiva)</option>
+            </select>
+          </div>
+        </div>
+      `
+    },
+    'vômit|vomit|enjo|nause|náusea': {
+      label: 'Vômitos / Náuseas',
+      icon: '🤢',
+      campos: `
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Quantas vezes nas últimas 24h?</label>
+            <input type="number" id="s_vomitos_vezes" min="0" max="100" placeholder="Ex.: 4">
+          </div>
+        </div>
+        <div class="checkbox-grid" style="margin-top:8px;grid-template-columns:1fr;">
+          <label class="checkbox-item" onclick="toggleCheck(this)">
+            <input type="checkbox" id="s_vomitos_agua"><span class="ckbox">✓</span> Consegue beber água sem vomitar
+          </label>
+        </div>
+      `
+    },
+    'diarreia|diarréia|fezes|intestino': {
+      label: 'Diarreia',
+      icon: '💩',
+      campos: `
+        <div class="checkbox-grid" style="grid-template-columns:1fr;">
+          <label class="checkbox-item" onclick="toggleCheck(this)">
+            <input type="checkbox" id="s_diarreia_sangue"><span class="ckbox">✓</span> Presença de sangue nas fezes
+          </label>
+        </div>
+        <div class="form-grid" style="margin-top:8px;">
+          <div class="form-group">
+            <label>Quantas evacuações por dia?</label>
+            <input type="number" id="s_diarreia_vezes" min="0" max="100" placeholder="Ex.: 5">
+          </div>
+        </div>
+      `
+    }
+  };
+
+  function analisarSintomas() {
+    const t = document.getElementById('sintomas_desc').value.toLowerCase();
+    const container = document.getElementById('sintomas-detalhes');
+    container.innerHTML = '';
+
+    for (const [keys, config] of Object.entries(sintomasConfig)) {
+      const keywords = keys.split('|');
+      if (keywords.some(k => t.includes(k))) {
+        const div = document.createElement('div');
+        div.className = 'sub-section show';
+        div.innerHTML = `<h4><span class="ico">${config.icon}</span> ${config.label}</h4>${config.campos}`;
+        container.appendChild(div);
+      }
+    }
+  }
+
+  function verificarDorPeito() {
+    const local = (document.getElementById('s_dor_local').value || '').toLowerCase();
+    const desc = (document.getElementById('sintomas_desc').value || '').toLowerCase();
+    const box = document.getElementById('s_dor_peito_box');
+    if (box) {
+      box.style.display = (local.includes('peito') || desc.includes('peito')) ? 'block' : 'none';
+    }
+  }
+
+  // ========== SATURAÇÃO ALERT ==========
+  document.getElementById('sv_saturacao').addEventListener('input', function() {
+    const alert = document.getElementById('saturacao-alert');
+    const val = parseInt(this.value);
+    if (val < 90 && val > 0) {
+      alert.classList.add('show');
+    } else {
+      alert.classList.remove('show');
+    }
+  });
+
+  // ========== ENVIAR TRIAGEM ==========
+  async function enviarTriagem() {
+    const required = document.querySelectorAll('#nome, #idade, #sexo, #sintomas_desc');
+    for (const el of required) {
+      if (!el.value.trim() || (el.tagName === 'SELECT' && !el.value)) {
+        mostrarErro(el.id, 'Campo obrigatório');
+        return;
+      }
+    }
+
+    document.getElementById('triage-form').style.display = 'none';
+    document.getElementById('loading').classList.add('show');
+    document.querySelector('.timeline').style.display = 'none';
+    document.getElementById('emergency-overlay').classList.remove('show');
+
+    const dados = {
+      paciente: {
+        nome: document.getElementById('nome').value.trim(),
+        idade: parseInt(document.getElementById('idade').value) || 0,
+        sexo: document.getElementById('sexo').value,
+        peso: parseFloat(document.getElementById('peso').value) || 0,
+        altura: parseFloat(document.getElementById('altura').value) || 0
+      },
+      historico: {
+        diabetes: document.getElementById('h_diabetes').checked,
+        hipertensao: document.getElementById('h_hipertensao').checked,
+        asma: document.getElementById('h_asma').checked,
+        cardiopatia: document.getElementById('h_cardiopatia').checked,
+        doenca_pulmonar: document.getElementById('h_pulmonar').checked,
+        doenca_renal: document.getElementById('h_renal').checked,
+        gravidez: document.getElementById('h_gravidez').checked,
+        alergias: document.getElementById('h_alergias').value,
+        medicamentos: document.getElementById('h_medicamentos').value,
+        cirurgias: document.getElementById('h_cirurgias').value
+      },
+      sintomas: {
+        descricao: document.getElementById('sintomas_desc').value,
+        temperatura: document.getElementById('s_febre_temp')?.value || '',
+        febre_dias: document.getElementById('s_febre_dias')?.value || '',
+        dor_local: document.getElementById('s_dor_local')?.value || '',
+        dor_intensidade: document.getElementById('s_dor_intensidade')?.value || '',
+        dor_peito_irradia: document.getElementById('s_dor_peito_irradia')?.checked || false,
+        dor_peito_suando: document.getElementById('s_dor_peito_suando')?.checked || false,
+        dor_peito_falta_ar: document.getElementById('s_dor_peito_falta_ar')?.checked || false,
+        falta_ar: (document.getElementById('s_falta_ar_repouso')?.checked || document.getElementById('s_falta_ar_moderada')?.checked) || false,
+        falta_ar_repouso: document.getElementById('s_falta_ar_repouso')?.checked || false,
+        falta_ar_moderada: document.getElementById('s_falta_ar_moderada')?.checked || false,
+        tosse_tipo: document.getElementById('s_tosse_tipo')?.value || '',
+        vomitos_vezes: document.getElementById('s_vomitos_vezes')?.value || '',
+        vomitos_agua: document.getElementById('s_vomitos_agua')?.checked || false,
+        diarreia_sangue: document.getElementById('s_diarreia_sangue')?.checked || false,
+        diarreia_vezes: document.getElementById('s_diarreia_vezes')?.value || '',
+        tempo: document.getElementById('s_tempo').value,
+        sv_temperatura: document.getElementById('sv_temperatura').value,
+        sv_pressao: document.getElementById('sv_pressao').value,
+        sv_fc: document.getElementById('sv_fc').value,
+        sv_saturacao: document.getElementById('sv_saturacao').value
+      }
+    };
+
+    try {
+      const res = await fetch('/api/triagem', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dados)
+      });
+      const result = await res.json();
+      mostrarResultado(result);
+    } catch (err) {
+      document.getElementById('loading').innerHTML = `
+        <p style="color:var(--danger);font-size:16px;">❌ Erro de conexão com o servidor.</p>
+        <p style="color:var(--gray-500);font-size:13px;margin-top:8px;">Verifique se o Flask está rodando.</p>
+        <button class="btn btn-primary" onclick="novaTriagem()" style="margin-top:16px;">Tentar novamente</button>
+      `;
+    }
+  }
+
+  // ========== MOSTRAR RESULTADO ==========
+  function mostrarResultado(r) {
+    document.getElementById('loading').classList.remove('show');
+    const container = document.getElementById('resultado');
+    container.classList.add('show');
+
+    const risco = (r.nivel_risco || 'VERDE').toLowerCase();
+    const classe = risco === 'vermelho' ? 'vermelho' : risco === 'laranja' ? 'laranja' : risco === 'amarelo' ? 'amarelo' : 'verde';
+
+    let prioridadeLabel = r.prioridade || '';
+    if (risco === 'verde') prioridadeLabel = 'Baixa Urgência';
+    else if (risco === 'amarelo') prioridadeLabel = 'Urgência Moderada';
+    else if (risco === 'laranja') prioridadeLabel = 'Alta Prioridade';
+    else if (risco === 'vermelho') prioridadeLabel = 'EMERGÊNCIA';
+
+    if (r.emergencia) {
+      document.getElementById('emergency-overlay').classList.add('show');
+    }
+
+    const nome = r.paciente?.nome || 'Paciente';
+    const idade = r.paciente?.idade ? `${r.paciente.idade} anos` : '';
+    const sexo = r.paciente?.sexo === 'M' ? 'Masculino' : r.paciente?.sexo === 'F' ? 'Feminino' : '';
+
+    let causasHTML = '';
+    if (r.possiveis_causas && r.possiveis_causas.length > 0) {
+      const lista = r.possiveis_causas.filter(c => !c.includes('Ollama') && !c.includes('Erro'));
+      if (lista.length > 0) {
+        causasHTML = `
+          <div class="result-section">
+            <h3>Possíveis causas (hipóteses clínicas)</h3>
+            <ul>${lista.map(c => `<li>${c}</li>`).join('')}</ul>
+          </div>`;
+      }
+    }
+
+    let sinaisHTML = '';
+    if (r.sinais_vitais) {
+      const sv = r.sinais_vitais;
+      const itens = [];
+      if (sv.temperatura) itens.push(`🌡 Temperatura: ${sv.temperatura}°C`);
+      if (sv.pressao_arterial) itens.push(`❤ PA: ${sv.pressao_arterial}`);
+      if (sv.frequencia_cardiaca) itens.push(`💓 FC: ${sv.frequencia_cardiaca} bpm`);
+      if (sv.saturacao) itens.push(`🫁 SatO₂: ${sv.saturacao}%`);
+      if (itens.length > 0) {
+        sinaisHTML = `
+          <div class="result-section">
+            <h3>Sinais vitais</h3>
+            <div style="display:flex;flex-wrap:wrap;gap:10px;">${itens.map(i => `<span style="background:var(--gray-100);padding:6px 14px;border-radius:6px;font-size:13px;font-weight:500;">${i}</span>`).join('')}</div>
+          </div>`;
+      }
+    }
+
+    const sintomasLista = r.sintomas?.filter(s => s.trim()) || [];
+
+    container.innerHTML = `
+      <div class="result-header bg-${classe}">
+        <h2>Resultado da Triagem</h2>
+        <div class="result-tag">${r.nivel_risco}</div>
+        <div class="result-sub">${prioridadeLabel}</div>
+      </div>
+      <div class="result-body">
+        <div class="result-section">
+          <h3>Paciente</h3>
+          <p style="font-size:16px;font-weight:600;">${nome}</p>
+          <div class="result-patient-info">
+            ${idade ? `<span>${idade}</span>` : ''}
+            ${sexo ? `<span>${sexo}</span>` : ''}
+          </div>
+        </div>
+
+        ${sintomasLista.length > 0 ? `
+        <div class="result-section">
+          <h3>Sintomas relatados</h3>
+          <p>${sintomasLista.join(' · ')}</p>
+          ${r.tempo_sintomas ? `<p style="color:var(--gray-600);font-size:13px;margin-top:4px;">⏱ ${r.tempo_sintomas}</p>` : ''}
+        </div>` : ''}
+
+        ${sinaisHTML}
+
+        <div class="result-section">
+          <h3>Análise clínica</h3>
+          <p>${r.explicacao || ''}</p>
+        </div>
+
+        ${causasHTML}
+
+        <div class="result-section">
+          <h3>Orientação</h3>
+          <div class="result-orientacao">${r.orientacao || ''}</div>
+        </div>
+
+        <div class="result-actions">
+          <button class="btn btn-outline" onclick="novaTriagem()">🔄 Nova Triagem</button>
+          <button class="btn btn-ghost" onclick="window.print()">🖨 Imprimir</button>
+        </div>
+      </div>
+    `;
+
+    container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    // Ajusta timeline
+    document.querySelectorAll('.tl-dot').forEach(d => d.classList.remove('active', 'done'));
+    document.querySelectorAll('.tl-label').forEach(l => l.classList.remove('active', 'done'));
+    document.querySelectorAll('.tl-line').forEach(l => l.classList.remove('active', 'done'));
+    for (let i = 1; i <= 5; i++) {
+      const dot = document.getElementById(`tl-dot-${i}`);
+      const label = document.getElementById(`tl-label-${i}`);
+      if (i === 5) {
+        dot.classList.add('active');
+        label.classList.add('active');
+      } else {
+        dot.classList.add('done');
+        label.classList.add('done');
+        const line = document.getElementById(`tl-line-${i}`);
+        if (line) line.classList.add('done');
+      }
+    }
+    document.querySelector('.timeline').style.display = 'flex';
+  }
+
+  // ========== NOVA TRIAGEM ==========
+  function novaTriagem() {
+    document.getElementById('resultado').classList.remove('show');
+    document.getElementById('resultado').innerHTML = '';
+    document.getElementById('emergency-overlay').classList.remove('show');
+    document.getElementById('loading').classList.remove('show');
+    document.getElementById('loading').innerHTML = `
+      <div class="spinner-ring"></div>
+      <p style="color:var(--gray-600);font-size:15px;font-weight:500;">Processando dados da triagem...</p>
+      <p style="color:var(--gray-500);font-size:13px;margin-top:4px;">Classificando nível de risco</p>
+    `;
+    document.getElementById('triage-form').style.display = 'block';
+    document.getElementById('triage-form').reset();
+    document.getElementById('sintomas-detalhes').innerHTML = '';
+    document.querySelectorAll('.checkbox-item').forEach(el => {
+      el.classList.remove('checked');
+      el.querySelector('input[type="checkbox"]').checked = false;
+    });
+    document.querySelector('.gravidez-only').style.display = 'none';
+    document.querySelector('.timeline').style.display = 'flex';
+    goStep(1);
+    document.getElementById('nome').focus();
+  }
+
+  // ENTER para próximo passo
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      const active = document.querySelector('.step-card.active');
+      if (active) {
+        const step = parseInt(active.dataset.step);
+        if (step < 4) {
+          e.preventDefault();
+          goStep(step + 1);
+        } else if (step === 4) {
+          e.preventDefault();
+          enviarTriagem();
+        }
+      }
+    }
+  });
+</script>
+
+</body>
+</html>
