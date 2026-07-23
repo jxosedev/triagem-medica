@@ -17,7 +17,7 @@ Sistema de triagem médica virtual que auxilia na classificação inicial de ris
   - **VERMELHO** — Emergência (SAMU 192 / hospital)
 - **Análise por pontuação** considerando: intensidade da dor, temperatura, saturação, pressão arterial, comorbidades, idade, gravidez
 - **Possíveis causas** geradas via modelo local (Ollama phi3:mini) quando disponível
-- **Interface web** responsiva com design profissional
+- **Interface web** responsiva com design hospitalar, painel de monitor com cores dinâmicas, animação ECG, sidebar do paciente e relógio ao vivo
 - **Interface CLI** para uso em terminal
 - **Saída em JSON** padronizada para integração com outros sistemas
 
@@ -34,6 +34,7 @@ triagem-medica/
 ├── test_triage.py      # Testes automatizados (10 cenários)
 ├── templates/
 │   └── index.html      # Frontend web (HTML/CSS/JS)
+├── .gitignore
 └── README.md
 ```
 
@@ -51,11 +52,11 @@ triagem-medica/
 
 ```bash
 # Clonar o repositório
-git clone https://github.com/SEU-USERNAME/triagem-medica.git
+git clone https://github.com/jxosedev/triagem-medica.git
 cd triagem-medica
 
 # Instalar dependências
-pip install flask requests
+pip install flask
 ```
 
 ---
