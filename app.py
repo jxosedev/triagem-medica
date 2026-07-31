@@ -1,6 +1,8 @@
 import json
 import os
-from flask import Flask, render_template, request, jsonify
+import io
+import socket
+from flask import Flask, render_template, request, jsonify, send_file
 
 from triage import TriageEngine, NivelRisco, detectar_emergencia_texto
 
@@ -153,6 +155,40 @@ def montar_engine(dados):
 @app.route("/health")
 def health():
     return jsonify({"status": "ok", "ollama": OLLAMA_OK})
+
+
+@app.route("/qrcode")
+def qrcode_page():
+    return render_template("qrcode.html")
+
+
+@app.route("/api/qrcode")
+def gerar_qrcode():
+    import qrcode
+
+    host = request.host.split(":")[0]
+    if host in ("127.0.0.1", "localhost"):
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            s.connect(("8.8.8.8", 80))
+            host = s.getsockname()[0]
+            s.close()
+        except Exception:
+            host = "localhost"
+
+    port = request.host.split(":")[1] if ":" in request.host else "5000"
+    url = f"http://{host}:{port}"
+
+    qr = qrcode.QRCode(version=1, box_size=10, border=5)
+    qr.add_data(url)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+    buf.seek(0)
+
+    return send_file(buf, mimetype="image/png", download_name="qrcode.png")
 
 
 @app.route("/")

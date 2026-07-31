@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIS-TRIAGEM - QR Code</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a1628 0%, #1a2744 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+        .container {
+            text-align: center;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle {
+            color: #8892b0;
+            margin-bottom: 30px;
+        }
+        .qr-box {
+            background: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            display: inline-block;
+            margin: 20px 0;
+        }
+        .qr-box img {
+            display: block;
+            width: 250px;
+            height: 250px;
+        }
+        .url {
+            font-size: 1.1em;
+            color: #00d4ff;
+            margin: 15px 0;
+            word-break: break-all;
+        }
+        .instructions {
+            color: #8892b0;
+            margin-top: 20px;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        .btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: linear-gradient(90deg, #00d4ff, #00ff88);
+            color: #0a1628;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        .btn:hover { transform: scale(1.05); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>SIS-TRIAGEM</h1>
+        <p class="subtitle">Escaneie o QR Code para acessar no celular</p>
+
+        <div class="qr-box">
+            <img src="/api/qrcode" alt="QR Code do Sistema de Triagem">
+        </div>
+
+        <p class="url" id="url"></p>
+
+        <div class="instructions">
+            <p>1. Abra a cmera do seu celular</p>
+            <p>2. Aponte para o QR Code</p>
+            <p>3. Toque no link que aparecer</p>
+        </div>
+
+        <a href="/" class="btn">Voltar ao Sistema</a>
+    </div>
+
+    <script>
+        document.getElementById('url').textContent = window.location.origin;
+    </script>
+</body>
+</html>
