@@ -150,6 +150,11 @@ def montar_engine(dados):
     return e
 
 
+@app.route("/health")
+def health():
+    return jsonify({"status": "ok", "ollama": OLLAMA_OK})
+
+
 @app.route("/")
 def index():
     return render_template("index.html")
