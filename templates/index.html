@@ -2,7 +2,11 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0c2337">
+<meta name="mobile-web-app-capable" content="yes">
 <title>SIS-TRIAGEM — Sistema de Classificação de Risco</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%230c2337'/%3E%3Cpath d='M2 12h4l1.6-4.5L11 17l2.4-8.5L15 12h7' fill='none' stroke='%2322d3c5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -409,11 +413,57 @@
   /* ============ RESPONSIVO ============ */
   @media (max-width: 700px) {
     .form-grid { grid-template-columns: 1fr; }
-    .checkbox-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+    .checkbox-grid { grid-template-columns: 1fr; }
     .step-body { padding: 18px; }
     .step-header { padding: 14px 16px; }
     .btn-row { flex-direction: column; }
-    .btn-row .btn { justify-content: center; }
+    .btn-row .btn { justify-content: center; min-height: 48px; font-size: 15px; }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      font-size: 16px;
+      padding: 14px 16px;
+      min-height: 48px;
+    }
+
+    .checkbox-item {
+      padding: 14px 16px;
+      min-height: 48px;
+      font-size: 14px;
+    }
+
+    .checkbox-item .ckbox {
+      width: 22px;
+      height: 22px;
+      font-size: 13px;
+    }
+
+    .btn {
+      padding: 14px 28px;
+      min-height: 48px;
+      font-size: 15px;
+    }
+
+    .step-number {
+      width: 38px;
+      height: 38px;
+    }
+
+    .result-tag {
+      font-size: 26px;
+    }
+
+    .result-orientacao {
+      font-size: 15px;
+      padding: 18px 20px;
+    }
+
+    .result-section p,
+    .result-section ul li {
+      font-size: 15px;
+      line-height: 1.6;
+    }
   }
 
   /* ============ PRINT ============ */

@@ -5,6 +5,7 @@ import socket
 from flask import Flask, render_template, request, jsonify, send_file
 
 from triage import TriageEngine, NivelRisco, detectar_emergencia_texto
+from simulador_ia import gerar_possiveis_causas as simulador_causas
 
 try:
     from ollama_client import gerar_possiveis_causas as ollama_causas
@@ -208,11 +209,14 @@ def api_triagem():
     if not engine.avaliacao.emergencia and OLLAMA_OK:
         try:
             causas = ollama_causas(engine.avaliacao.to_dict())
-            engine.avaliacao.possiveis_causas = causas
+            if causas and any("Ollama" in c or "Erro" in c or "conectar" in c for c in causas):
+                engine.avaliacao.possiveis_causas = simulador_causas(engine.avaliacao.to_dict())
+            else:
+                engine.avaliacao.possiveis_causas = causas
         except Exception:
-            engine.avaliacao.possiveis_causas = ["Consulte um médico para avaliação diagnóstica."]
+            engine.avaliacao.possiveis_causas = simulador_causas(engine.avaliacao.to_dict())
     else:
-        engine.avaliacao.possiveis_causas = ["Consulte um médico para avaliação diagnóstica."]
+        engine.avaliacao.possiveis_causas = simulador_causas(engine.avaliacao.to_dict())
 
     return jsonify(engine.avaliacao.to_dict())
 
