@@ -2,7 +2,9 @@ import json
 import os
 import io
 import socket
-from flask import Flask, render_template, request, jsonify, send_file
+from flask import Flask, render_template, request, jsonify, send_file, url_for
+
+BASE_URL = os.environ.get("BASE_URL", "").rstrip("/")
 
 from triage import TriageEngine, NivelRisco, detectar_emergencia_texto
 from simulador_ia import gerar_possiveis_causas as simulador_causas
@@ -13,8 +15,12 @@ try:
 except Exception:
     OLLAMA_OK = False
 
-app = Flask(__name__)
-app.secret_key = os.urandom(32).hex()
+app = Flask(
+    __name__,
+    template_folder=os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates"),
+    static_folder=os.path.join(os.path.dirname(os.path.abspath(__file__)), "static"),
+)
+app.secret_key = os.environ.get("SECRET_KEY", os.urandom(32).hex())
 
 
 def montar_engine(dados):
@@ -167,18 +173,21 @@ def qrcode_page():
 def gerar_qrcode():
     import qrcode
 
-    host = request.host.split(":")[0]
-    if host in ("127.0.0.1", "localhost"):
-        try:
-            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            s.connect(("8.8.8.8", 80))
-            host = s.getsockname()[0]
-            s.close()
-        except Exception:
-            host = "localhost"
+    if BASE_URL:
+        url = BASE_URL
+    else:
+        host = request.host.split(":")[0]
+        if host in ("127.0.0.1", "localhost"):
+            try:
+                s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                s.connect(("8.8.8.8", 80))
+                host = s.getsockname()[0]
+                s.close()
+            except Exception:
+                host = "localhost"
 
-    port = request.host.split(":")[1] if ":" in request.host else "5000"
-    url = f"http://{host}:{port}"
+        port = request.host.split(":")[1] if ":" in request.host else "5000"
+        url = f"http://{host}:{port}"
 
     qr = qrcode.QRCode(version=1, box_size=10, border=5)
     qr.add_data(url)
@@ -222,5 +231,6 @@ def api_triagem():
 
 
 if __name__ == "__main__":
-    print("Servidor rodando em http://localhost:5000")
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    print(f"Servidor rodando em http://localhost:{port}")
+    app.run(debug=False, host="0.0.0.0", port=port)
