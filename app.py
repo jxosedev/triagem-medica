@@ -186,8 +186,12 @@ def gerar_qrcode():
             except Exception:
                 host = "localhost"
 
-        port = request.host.split(":")[1] if ":" in request.host else "5000"
-        url = f"http://{host}:{port}"
+        protocol = "https" if request.is_secure or request.headers.get("x-forwarded-proto") == "https" else "http"
+        port = request.host.split(":")[1] if ":" in request.host else ("443" if protocol == "https" else "5000")
+        if (protocol == "https" and port == "443") or (protocol == "http" and port == "5000"):
+            url = f"{protocol}://{host}"
+        else:
+            url = f"{protocol}://{host}:{port}"
 
     qr = qrcode.QRCode(version=1, box_size=10, border=5)
     qr.add_data(url)

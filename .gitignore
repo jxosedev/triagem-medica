@@ -55,3 +55,5 @@ docker-compose.override.yml
 # Environments
 .env.local
 .env.*.local
+.vercel
+.env*
